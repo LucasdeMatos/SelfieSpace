@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Nossa selfie oficial no espaço — capturada pelo SAT GUS (CrunchLabs / Mark Rober) a ~500 km de altitude, com a Terra ao fundo. Foto real, não gerada por IA." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>Nossa Selfie no Espaço · SAT GUS · Space Selfie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: oklch(0.08 0 0);
+      --surface: oklch(0.14 0.012 230);
+      --surface-2: oklch(0.18 0.016 230);
+      --ink: oklch(0.97 0.008 230);
+      --muted: oklch(0.72 0.02 230);
+      --faint: oklch(0.48 0.02 230);
+      --primary: oklch(0.82 0.15 113);
+      --primary-dim: oklch(0.55 0.12 113);
+      --accent: oklch(0.74 0.11 230);
+      --accent-deep: oklch(0.45 0.1 250);
+      --warm: oklch(0.78 0.14 55);
+      --border: oklch(0.28 0.02 230);
+      --proof: oklch(0.78 0.16 145);
+      --font-display: "Unbounded", system-ui, sans-serif;
+      --font-body: "Source Sans 3", system-ui, sans-serif;
+      --measure: 68ch;
+      --pad: clamp(1.25rem, 4vw, 3rem);
+      --radius: 0.75rem;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --z-sticky: 100;
+      --z-lightbox: 200;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.2rem);
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--accent); text-underline-offset: 0.18em; }
+    a:hover { color: var(--primary); }
+    a:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--primary);
+      color: var(--bg);
+      padding: 0.75rem 1rem;
+      z-index: 300;
+      font-weight: 700;
+    }
+    .skip:focus { left: var(--pad); top: 0.75rem; }
+
+    /* ——— Nav ——— */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem 1.5rem;
+      padding: 0.85rem var(--pad);
+      background: oklch(0.08 0 0 / 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid oklch(1 0 0 / 0.06);
+    }
+    .site-nav .brand {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .site-nav .brand span { color: var(--primary); }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 1.1rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ——— Hero ——— */
+    .hero {
+      position: relative;
+      min-height: min(100dvh, 920px);
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+    }
+    .hero-media {
+      position: absolute;
+      inset: 0;
+    }
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 55%;
+    }
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, oklch(0.08 0 0) 0%, oklch(0.08 0 0 / 0.55) 38%, oklch(0.08 0 0 / 0.15) 65%, transparent 100%),
+        linear-gradient(to right, oklch(0.08 0 0 / 0.55) 0%, transparent 45%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: clamp(2rem, 6vw, 5rem) var(--pad) clamp(2.5rem, 5vw, 4rem);
+      max-width: 48rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid oklch(0.82 0.15 113 / 0.45);
+      background: oklch(0.82 0.15 113 / 0.1);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+    .hero-badge::before {
+      content: "";
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(1.85rem, 1.2rem + 3vw, 3.4rem);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin: 0 0 1rem;
+      text-wrap: balance;
+      max-width: 16ch;
+    }
+    .hero .lede {
+      font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
+      color: var(--muted);
+      max-width: 38ch;
+      margin: 0 0 1.75rem;
+      text-wrap: pretty;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1.5rem;
+      margin: 0 0 1.75rem;
+      padding: 0;
+      list-style: none;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .hero-meta strong {
+      display: block;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.8rem 1.25rem;
+      border-radius: 999px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.25s var(--ease-out), background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: var(--primary);
+      color: oklch(0.12 0.02 113);
+    }
+    .btn-primary:hover {
+      background: oklch(0.88 0.14 113);
+      color: oklch(0.12 0.02 113);
+    }
+    .btn-ghost {
+      background: oklch(1 0 0 / 0.06);
+      color: var(--ink);
+      border-color: oklch(1 0 0 / 0.14);
+    }
+    .btn-ghost:hover {
+      background: oklch(1 0 0 / 0.1);
+      border-color: oklch(1 0 0 / 0.28);
+      color: var(--ink);
+    }
+
+    /* ——— Sections ——— */
+    section {
+      padding: clamp(3.5rem, 8vw, 6.5rem) var(--pad);
+    }
+    .section-inner {
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    .section-head {
+      max-width: var(--measure);
+      margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 1.15rem + 1.6vw, 2.35rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 0.85rem;
+      text-wrap: balance;
+    }
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 58ch;
+      text-wrap: pretty;
+    }
+    .prose {
+      max-width: var(--measure);
+    }
+    .prose p { margin: 0 0 1.1rem; color: var(--muted); text-wrap: pretty; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--ink); font-weight: 600; }
+
+    /* ——— Split media ——— */
+    .split {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 3rem);
+      align-items: center;
+    }
+    @media (min-width: 860px) {
+      .split { grid-template-columns: 1.05fr 0.95fr; }
+      .split.reverse { direction: rtl; }
+      .split.reverse > * { direction: ltr; }
+    }
+    .media-frame {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: 0 24px 60px oklch(0 0 0 / 0.45);
+    }
+    .media-frame img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+    .media-frame figcaption {
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: var(--faint);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .media-frame figcaption a { color: var(--muted); }
+
+    /* ——— Stats strip ——— */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 2rem;
+    }
+    .stat {
+      background: var(--surface);
+      padding: 1.15rem 1.25rem;
+    }
+    .stat dt {
+      font-size: 0.78rem;
+      color: var(--faint);
+      margin: 0 0 0.35rem;
+      font-weight: 500;
+    }
+    .stat dd {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    /* ——— Live satellite tracker (N2YO, same as SpaceSelfie.com) ——— */
+    .tracker-section {
+      padding: 0;
+      background: oklch(0.1 0.02 230);
+      border-block: 1px solid var(--border);
+    }
+    .tracker-grid {
+      display: grid;
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    @media (min-width: 900px) {
+      .tracker-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+        min-height: 560px;
+      }
+    }
+    .tracker-map {
+      position: relative;
+      min-height: 420px;
+      background: oklch(0.12 0 0);
+      overflow: hidden;
+    }
+    @media (min-width: 900px) {
+      .tracker-map { min-height: 100%; }
+    }
+    .tracker-map iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+    .tracker-copy {
+      padding: clamp(1.75rem, 4vw, 3rem) var(--pad);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+      background:
+        radial-gradient(ellipse 80% 60% at 100% 50%, oklch(0.82 0.15 113 / 0.1), transparent 60%),
+        var(--surface);
+    }
+    .tracker-copy h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.35rem, 1.1rem + 1.2vw, 2rem);
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.2;
+      text-wrap: balance;
+      letter-spacing: -0.02em;
+    }
+    .tracker-copy h2 span {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.72em;
+      font-weight: 500;
+      color: var(--primary);
+    }
+    .tracker-copy p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 40ch;
+      text-wrap: pretty;
+    }
+    .tracker-note {
+      font-size: 0.85rem;
+      color: var(--faint);
+    }
+    .tracker-note a { color: var(--muted); }
+
+    /* ——— How it works ——— */
+    .how {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.45 0.1 250 / 0.18), transparent 70%),
+        var(--bg);
+    }
+    .steps {
+      display: grid;
+      gap: 0;
+      counter-reset: step;
+    }
+    .step {
+      display: grid;
+      gap: 1rem;
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--border);
+      grid-template-columns: auto 1fr;
+      align-items: start;
+    }
+    .step:last-child { border-bottom: 1px solid var(--border); }
+    .step-num {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--primary);
+      min-width: 2.5rem;
+      line-height: 1.2;
+    }
+    .step h3 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0 0 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 52ch;
+      font-size: 0.98rem;
+    }
+    @media (min-width: 720px) {
+      .steps-with-visual {
+        display: grid;
+        grid-template-columns: 1fr 0.9fr;
+        gap: clamp(1.5rem, 4vw, 3rem);
+        align-items: start;
+      }
+      .steps-with-visual .media-frame {
+        position: sticky;
+        top: 5rem;
+      }
+    }
+
+    /* ——— Video ——— */
+    .video-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: grid;
+    }
+    @media (min-width: 800px) {
+      .video-block { grid-template-columns: 1.2fr 1fr; }
+    }
+    .video-thumb {
+      position: relative;
+      min-height: 220px;
+      background: oklch(0.12 0.02 230);
+    }
+    .video-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 220px;
+    }
+    .video-thumb .play {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: oklch(0 0 0 / 0.35);
+      text-decoration: none;
+      transition: background 0.25s var(--ease-out);
+    }
+    .video-thumb .play:hover { background: oklch(0 0 0 / 0.2); }
+    .play-icon {
+      width: 4.25rem;
+      height: 4.25rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: oklch(0.12 0.02 113);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 32px oklch(0 0 0 / 0.4);
+    }
+    .play-icon svg { margin-left: 3px; }
+    .video-copy {
+      padding: clamp(1.5rem, 3vw, 2.25rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.85rem;
+    }
+    .video-copy h3 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      margin: 0;
+      line-height: 1.3;
+      text-wrap: balance;
+    }
+    .video-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    /* ——— Our selfie showcase ——— */
+    .showcase {
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 100%, oklch(0.55 0.12 113 / 0.12), transparent 60%),
+        var(--bg);
+    }
+    .selfie-stage {
+      position: relative;
+      border-radius: calc(var(--radius) + 4px);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      box-shadow:
+        0 0 0 1px oklch(0.82 0.15 113 / 0.12),
+        0 40px 80px oklch(0 0 0 / 0.55);
+    }
+    .selfie-stage img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      object-position: center 60%;
+      cursor: zoom-in;
+    }
+    .selfie-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.5rem 1rem;
+      padding: 0.85rem 1.1rem;
+      background: oklch(0.1 0 0);
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--faint);
+    }
+    .selfie-bar strong { color: var(--muted); font-weight: 600; }
+
+    /* ——— Proof / authenticity ——— */
+    .proof-section {
+      background: var(--surface);
+      border-block: 1px solid var(--border);
+    }
+    .proof-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    @media (min-width: 700px) {
+      .proof-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .proof-card {
+      padding: 1.35rem 1.4rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .proof-card h3 {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin: 0 0 0.55rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      line-height: 1.3;
+    }
+    .proof-card h3 .mark {
+      flex-shrink: 0;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 50%;
+      background: oklch(0.78 0.16 145 / 0.15);
+      color: var(--proof);
+      display: grid;
+      place-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 0.1rem;
+    }
+    .proof-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .proof-compare {
+      margin-top: 2rem;
+      display: grid;
+      gap: 1rem;
+    }
+    @media (min-width: 800px) {
+      .proof-compare { grid-template-columns: 1.2fr 1fr; align-items: center; }
+    }
+    .callout {
+      padding: 1.35rem 1.5rem;
+      border-radius: var(--radius);
+      background: oklch(0.82 0.15 113 / 0.08);
+      border: 1px solid oklch(0.82 0.15 113 / 0.28);
+    }
+    .callout h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      margin: 0 0 0.6rem;
+      color: var(--primary);
+    }
+    .callout p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .callout ul {
+      margin: 0.75rem 0 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .callout li { margin-bottom: 0.35rem; }
+    .callout li strong { color: var(--ink); }
+
+    /* ——— Timeline ——— */
+    .timeline {
+      display: grid;
+      gap: 0;
+      position: relative;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr;
+      gap: 1rem;
+      padding: 1.15rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .timeline-item:last-child { border-bottom: 1px solid var(--border); }
+    .timeline-date {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary);
+      padding-top: 0.15rem;
+    }
+    .timeline-body h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin: 0 0 0.3rem;
+    }
+    .timeline-body p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 520px) {
+      .timeline-item { grid-template-columns: 1fr; gap: 0.35rem; }
+    }
+
+    /* ——— Sources ——— */
+    .sources {
+      font-size: 0.9rem;
+    }
+    .sources ol {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: var(--muted);
+    }
+    .sources li { margin-bottom: 0.45rem; }
+    .sources a { word-break: break-word; }
+
+    footer {
+      padding: 2rem var(--pad) 3rem;
+      border-top: 1px solid var(--border);
+      color: var(--faint);
+      font-size: 0.85rem;
+    }
+    footer .section-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: baseline;
+    }
+    footer strong { color: var(--muted); font-weight: 600; }
+
+    /* ——— Lightbox ——— */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-lightbox);
+      background: oklch(0.05 0 0 / 0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .lightbox[open] {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: min(96vw, 1400px);
+      max-height: 90dvh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 20px 60px oklch(0 0 0 / 0.6);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      border: 1px solid oklch(1 0 0 / 0.2);
+      background: oklch(0.15 0 0);
+      color: var(--ink);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .lightbox-close:hover { background: oklch(0.22 0 0); }
+    .lightbox-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: var(--faint);
+    }
+
+    /* Reveal (respect reduced motion via media above) */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+      }
+      .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+  <nav class="site-nav" aria-label="Navegação principal">
+    <a class="brand" href="#topo">Space Selfie <span>· Nossa órbita</span></a>
+    <ul class="nav-links">
+      <li><a href="#projeto">Projeto</a></li>
+      <li><a href="#como-funciona">Como funciona</a></li>
+      <li><a href="#selfie">A foto</a></li>
+      <li><a href="#autenticidade">Prova real</a></li>
+      <li><a href="#jornada">Jornada</a></li>
+      <li><a href="#ao-vivo">Onde está agora</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero" id="topo">
+    <div class="hero-media" aria-hidden="true">
+      <img
+        src="assets/nossa-selfie-espacial.jpg"
+        alt=""
+        width="1600"
+        height="1200"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="hero-content">
+      <p class="hero-badge">Foto oficial · SAT GUS · LEO ~500 km</p>
+      <h1>Nossa selfie no espaço</h1>
+      <p class="lede">
+        Eu e minha namorada no display do satélite SAT&nbsp;GUS, com a curva da Terra ao fundo —
+        capturada em órbita e devolvida à Terra ontem, após cerca de 1&nbsp;ano e 2&nbsp;meses.
+        Hardware real. Não é arte de IA.
+      </p>
+      <ul class="hero-meta">
+        <li><strong>Missão</strong> Space Selfie · CrunchLabs</li>
+        <li><strong>Satélite</strong> SAT GUS · NORAD 62713</li>
+        <li><strong>Display</strong> Google Pixel a bordo</li>
+      </ul>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#selfie">Ver a foto completa</a>
+        <a class="btn btn-ghost" href="#autenticidade">Por que é real</a>
+        <a class="btn btn-ghost" href="#ao-vivo">Onde está o satélite</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <!-- Projeto -->
+    <section id="projeto" aria-labelledby="projeto-title">
+      <div class="section-inner">
+        <div class="split reveal">
+          <div>
+            <div class="section-head" style="margin-bottom: 1.25rem;">
+              <h2 id="projeto-title">Introdução ao projeto Space Selfie</h2>
+            </div>
+            <div class="prose">
+              <p>
+                O projeto <strong>Space Selfie</strong> da <strong>CrunchLabs</strong>, idealizado pelo
+                engenheiro e youtuber <strong>Mark Rober</strong>, é um marco na democratização do acesso ao espaço.
+                Lançado em <strong>14 de janeiro de 2025</strong>, permitiu que pessoas de todo o mundo enviassem
+                fotos para serem exibidas em um satélite em órbita terrestre: o <strong>SAT&nbsp;GUS</strong>.
+              </p>
+              <p>
+                O SAT&nbsp;GUS é um <strong>CubeSat 12U</strong> que orbita a Terra a aproximadamente
+                <strong>500&nbsp;km</strong> de altitude. Ele exibe imagens em uma tela e as fotografa com a
+                Terra como pano de fundo, usando um <strong>Google Pixel</strong> a bordo. O sonho de ter uma
+                “selfie” no espaço virou algo acessível — e documentado.
+              </p>
+              <p>
+                O satélite ainda está em órbita (NORAD <strong>62713</strong>).
+                Abaixo, o mesmo mapa ao vivo do
+                <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">SpaceSelfie.com</a>
+                — “Where is the satellite right now?”.
+              </p>
+            </div>
+            <dl class="stats">
+              <div class="stat">
+                <dt>Altitude</dt>
+                <dd>~500 km</dd>
+              </div>
+              <div class="stat">
+                <dt>Órbita</dt>
+                <dd>~90 min</dd>
+              </div>
+              <div class="stat">
+                <dt>Formato</dt>
+                <dd>12U CubeSat</dd>
+              </div>
+              <div class="stat">
+                <dt>NORAD</dt>
+                <dd>62713</dd>
+              </div>
+            </dl>
+            <p style="margin: 1.25rem 0 0;">
+              <a class="btn btn-primary" href="#ao-vivo">Ver posição ao vivo</a>
+            </p>
+          </div>
+          <figure class="media-frame">
+            <img
+              src="assets/sat-gus-tyvak.jpg"
+              alt="Render oficial do satélite SAT GUS com painéis solares abertos e a Terra ao fundo"
+              width="1200"
+              height="1200"
+              loading="lazy"
+            />
+            <figcaption>
+              Render oficial do SAT GUS · crédito
+              <a href="https://tyvak.eu/missions/satgus/" rel="noopener noreferrer" target="_blank">Tyvak International</a>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Where is the satellite right now? (widget oficial N2YO, igual SpaceSelfie.com) -->
+    <section class="tracker-section" id="ao-vivo" aria-labelledby="ao-vivo-title">
+      <div class="tracker-grid">
+        <div class="tracker-map">
+          <iframe
+            src="https://www.n2yo.com/widgets/widget-tracker.php?s=62713&amp;size=large&amp;all=1&amp;me=10&amp;map=2&amp;tem=1&amp;layout=normal&amp;tle=1&amp;tp=1"
+            title="Where is the satellite right now? — rastreador ao vivo do SAT GUS (N2YO)"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="tracker-copy">
+          <h2 id="ao-vivo-title">
+            Where is the satellite right now?
+            <span>Onde está o satélite agora?</span>
+          </h2>
+          <p>
+            Acompanhe o <strong>SAT&nbsp;GUS</strong> em tempo real — o mesmo mapa do
+            <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">SpaceSelfie.com</a>.
+            Ela corre a cerca de <strong>27.000&nbsp;km/h</strong> (~17.000&nbsp;mph), a ~300–500&nbsp;km de altitude,
+            e completa uma volta na Terra a cada ~90&nbsp;minutos.
+          </p>
+          <p>
+            No mapa: posição atual, trilha orbital, próximas passagens sobre a sua localização
+            e dados TLE. NORAD&nbsp;<strong>62713</strong>.
+          </p>
+          <p>
+            <a
+              class="btn btn-primary"
+              href="https://www.n2yo.com/satellite/?s=62713"
+              target="_blank"
+              rel="noopener noreferrer"
+            >More nerdy details (N2YO)</a>
+          </p>
+          <p class="tracker-note">
+            Widget powered by
+            <a href="https://www.n2yo.com/" target="_blank" rel="noopener noreferrer">N2YO.com</a>
+            — o mesmo embed usado em spaceselfie.com. Precisa de internet para carregar o mapa ao vivo.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Como funciona -->
+    <section class="how" id="como-funciona" aria-labelledby="como-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="como-title">Como funciona na prática</h2>
+          <p>
+            Não é magia de software: é um satélite físico, um celular real no espaço e uma câmera de
+            voo que fotografa a tela com o planeta atrás. Você manda a selfie <strong>e escolhe a cidade</strong>
+            onde quer que a foto seja tirada. Passo a passo:
+          </p>
+        </div>
+
+        <div class="steps-with-visual reveal">
+          <ol class="steps">
+            <li class="step">
+              <span class="step-num" aria-hidden="true">01</span>
+              <div>
+                <h3>Você envia a foto</h3>
+                <p>
+                  No site <a href="https://www.spaceselfie.com/" rel="noopener noreferrer" target="_blank">SpaceSelfie.com</a>
+                  (portal CrunchLabs), o público envia a selfie. Em maio de 2025 o site abriu para todos;
+                  a nossa foto entrou na fila poucos dias depois.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">02</span>
+              <div>
+                <h3>Você escolhe onde a foto será tirada</h3>
+                <p>
+                  Além da imagem, você indica a <strong>cidade / localização</strong> desejada.
+                  A ideia é o SAT&nbsp;GUS capturar a selfie quando estiver
+                  <strong>sobrevoando aquela região</strong> — o “photobomb” da Terra por trás do
+                  display fica alinhado com o lugar que você pediu (Mark Rober falava em tirar
+                  a foto “over your city” / perto da sua casa).
+                </p>
+                <p style="margin-top: 0.55rem;">
+                  Importante: o satélite <strong>não fotografa vocês no chão</strong>. A selfie de vocês
+                  está na tela do Pixel; a câmera espacial fotografa esse display com o planeta ao fundo.
+                  A cidade escolhida define <strong>sobre qual pedaço da Terra</strong> o clique deve acontecer —
+                  não é garantia de “minha casa no centro do quadro”, e sim do fundo orbital daquela região.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">03</span>
+              <div>
+                <h3>A imagem sobe para o SAT GUS</h3>
+                <p>
+                  A foto (e a preferência de localização) é transmitida ao satélite em LEO (~500&nbsp;km).
+                  O SAT&nbsp;GUS foi construído pela <strong>Tyvak International</strong> (Turim), com câmera
+                  de voo da <strong>Redwire</strong> e parcerias com Google Pixel e T-Mobile.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">04</span>
+              <div>
+                <h3>O Pixel exibe a selfie</h3>
+                <p>
+                  Um <strong>Google Pixel</strong> comercial, montado no módulo de display do satélite,
+                  mostra a sua foto na tela. É literalmente o mesmo tipo de aparelho que usamos no chão —
+                  só que em órbita.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">05</span>
+              <div>
+                <h3>A câmera espacial dispara (sobre a região escolhida)</h3>
+                <p>
+                  Quando a órbita passa pela área pedida, a câmera de bordo (Redwire) fotografa o display
+                  <em>com a Terra curva e o limbo atmosférico azul no fundo</em>.
+                  É esse enquadramento que prova a captura em órbita — e o porquê do mapa ao vivo
+                  “Where is the satellite right now?” importar tanto.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">06</span>
+              <div>
+                <h3>O arquivo volta à Terra</h3>
+                <p>
+                  A imagem é enviada de volta pelos sistemas de solo da missão e entregue por e-mail —
+                  com marca d’água oficial CrunchLabs / SpaceSelfie e a legenda
+                  “Displayed on Google Pixel”.
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <figure class="media-frame">
+            <img
+              src="assets/earth-from-space.jpg"
+              alt="Curvatura da Terra e atmosfera azul vistas do espaço, com estrutura de espaçonave à direita"
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <figcaption>
+              Referência visual de LEO: curva da Terra e atmosfera — o mesmo tipo de “limbo” azul
+              que aparece atrás do display na nossa foto
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Missão / vídeo -->
+    <section id="missao" aria-labelledby="missao-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="missao-title">A missão original e o vídeo</h2>
+          <p>
+            Mark Rober liderou o desenvolvimento do SAT&nbsp;GUS. O lançamento (Falcon&nbsp;9 Transporter-12)
+            e toda a ciência por trás do projeto estão no vídeo oficial.
+          </p>
+        </div>
+
+        <div class="video-block reveal">
+          <div class="video-thumb">
+            <img
+              src="assets/rocket-launch.jpg"
+              alt=""
+              width="1400"
+              height="900"
+              loading="lazy"
+            />
+            <a
+              class="play"
+              href="https://www.youtube.com/watch?v=qr1AvisQcV8"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Assistir no YouTube: I Spent $5,000,000 So You Can Go To Space For FREE — Mark Rober"
+            >
+              <span class="play-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              </span>
+            </a>
+          </div>
+          <div class="video-copy">
+            <h3>I Spent $5,000,000 So You Can Go To Space For FREE</h3>
+            <p>
+              Documentário da missão: da concepção ao satélite em órbita, e por que a selfie ficou
+              gratuita para o planeta. Canal oficial Mark Rober.
+            </p>
+            <p>
+              <a class="btn btn-primary" href="https://www.youtube.com/watch?v=qr1AvisQcV8" target="_blank" rel="noopener noreferrer">
+                Assistir no YouTube
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div class="split reverse" style="margin-top: clamp(2.5rem, 5vw, 4rem);">
+          <figure class="media-frame reveal">
+            <img
+              src="assets/earth-blue-marble.jpg"
+              alt="Terra à noite vista do espaço, com cidades iluminadas e faixa da atmosfera no horizonte"
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <figcaption>Terra em órbita baixa — o “palco” permanente do SAT GUS a cada ~90 minutos</figcaption>
+          </figure>
+          <div class="prose reveal">
+            <p>
+              Parceiros da missão incluem <strong>CrunchLabs</strong>, <strong>Tyvak International</strong>,
+              <strong>Redwire</strong> (câmera), <strong>Google Pixel</strong> (display) e
+              <strong>T-Mobile</strong>. Lançamento a bordo do <strong>SpaceX Falcon&nbsp;9</strong>
+              (missão Transporter-12), em 14 de janeiro de 2025.
+            </p>
+            <p>
+              Fontes oficiais e técnicas estão listadas no final desta página — para quem quiser
+              conferir os números e a arquitetura do satélite.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- A selfie -->
+    <section class="showcase" id="selfie" aria-labelledby="selfie-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="selfie-title">Nossa selfie espacial</h2>
+          <p>
+            Em maio de 2025, o SpaceSelfie.com abriu para o público. Dois dias depois, a nossa foto
+            entrou na jornada. Depois de cerca de <strong>1&nbsp;ano e 2&nbsp;meses</strong> de
+            fila e captura em órbita, o arquivo voltou à Terra:
+            <strong>recebemos a foto por e-mail ontem, 27 de julho de 2026</strong> — pronta para ser revelada.
+          </p>
+        </div>
+
+        <div class="callout reveal" style="margin-bottom: 1.75rem;">
+          <h3>Tempo até chegar no e-mail</h3>
+          <p>
+            No nosso caso, entre o <strong>envio da foto</strong> (maio de 2025) e o
+            <strong>e-mail com o arquivo oficial</strong> (27 de julho de 2026) passaram cerca de
+            <strong>1&nbsp;ano e 2&nbsp;meses</strong> — em média, essa é a ordem de grandeza da espera
+            dos primeiros lotes (relatos públicos falam em algo entre ~1 e 2 anos na fila do SAT&nbsp;GUS).
+          </p>
+          <ul>
+            <li>
+              <strong>Quase toda a espera é a fila:</strong> a selfie fica aguardando vez para ser
+              exibida no Pixel e fotografada em órbita.
+            </li>
+            <li>
+              <strong>Depois do “clique” no espaço:</strong> o arquivo ainda passa por downlink e
+              processamento no solo antes de cair na caixa de entrada — em geral bem mais curto
+              que a fila (dias, não anos). A foto que recebemos não traz nos metadados a hora
+              exata da captura, então o número confiável que temos é o <em>envio → e-mail</em>.
+            </li>
+            <li>
+              <strong>Nosso intervalo:</strong> ~14 meses (~425 dias) do upload ao e-mail.
+            </li>
+          </ul>
+        </div>
+
+        <figure class="selfie-stage reveal">
+          <img
+            id="selfie-img"
+            src="assets/nossa-selfie-espacial.jpg"
+            alt="Foto oficial Space Selfie: casal em um Google Pixel a bordo do SAT GUS, com a curvatura da Terra e o limbo atmosférico azul ao fundo; logos CrunchLabs no hardware e faixa oficial SpaceSelfie.com"
+            width="1600"
+            height="1200"
+            loading="lazy"
+            tabindex="0"
+            role="button"
+            aria-label="Ampliar a selfie espacial"
+          />
+          <div class="selfie-bar">
+            <span><strong>E-mail:</strong> 27 jul 2026 · ~1 ano e 2 meses após o envio</span>
+            <span><strong>Display:</strong> Google Pixel · CrunchLabs</span>
+            <span>Clique na imagem para ampliar</span>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Autenticidade -->
+    <section class="proof-section" id="autenticidade" aria-labelledby="prova-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="prova-title">Por que esta foto não é IA</h2>
+          <p>
+            Modelos de imagem inventam cenas “perfeitas”. A nossa foto carrega <strong>assinaturas de hardware
+            e de missão</strong> que um gerador não precisa inventar — e que batem com o que a CrunchLabs
+            e a Tyvak publicam sobre o SAT&nbsp;GUS.
+          </p>
+        </div>
+
+        <div class="proof-grid reveal">
+          <article class="proof-card">
+            <h3><span class="mark" aria-hidden="true">1</span> Hardware físico no enquadramento</h3>
+            <p>
+              O display não é um recorte flutuante: aparece a <strong>carcaça preta do módulo</strong>,
+              parafusos, bordas e a estrutura do satélite. Geradores de imagem raramente modelam
+              um produto de missão com essa coerência mecânica.
+            </p>
+          </article>
+          <article class="proof-card">
+            <h3><span class="mark" aria-hidden="true">2</span> Logos oficiais no metal</h3>
+            <p>
+              No topo do módulo: <strong>CRUNCHLABS</strong> e o símbolo da missão. Isso é marca
+              impressa no hardware voando — não um filtro aplicado depois num collage genérico.
+            </p>
+          </article>
+          <article class="proof-card">
+            <h3><span class="mark" aria-hidden="true">3</span> Google Pixel como tela, não como efeito</h3>
+            <p>
+              A selfie do casal está <strong>dentro da tela do Pixel</strong> (reflexos, proporção de
+              smartphone, moldura). A câmera do satélite fotografou o aparelho ligado no espaço —
+              exatamente o fluxo descrito pela Redwire e pela CrunchLabs.
+            </p>
+          </article>
+          <article class="proof-card">
+            <h3><span class="mark" aria-hidden="true">4</span> Limbo atmosférico e curva da Terra</h3>
+            <p>
+              O fundo mostra a <strong>curva do planeta</strong> e a fina faixa azul da atmosfera
+              (o “limb”), típica de fotos de órbita baixa (~500&nbsp;km). Nuvens e relevo têm
+              textura fotográfica irregular — não o “liso perfeito” de muitos renders de IA.
+            </p>
+          </article>
+          <article class="proof-card">
+            <h3><span class="mark" aria-hidden="true">5</span> Marca d’água de entrega da missão</h3>
+            <p>
+              Na base do arquivo oficial:
+              <em>“To get your CrunchLabs space selfie visit SpaceSelfie.com”</em> e
+              <em>“Displayed on Google Pixel”</em>. É o formato de entrega do programa, não um
+              watermark inventado em editor.
+            </p>
+          </article>
+          <article class="proof-card">
+            <h3><span class="mark" aria-hidden="true">6</span> Cadeia pública verificável</h3>
+            <p>
+              Missão anunciada por Mark Rober, satélite documentado pela Tyvak, câmera Redwire,
+              lançamento Falcon&nbsp;9 Transporter-12 (14/01/2025), portal SpaceSelfie.com.
+              Qualquer um pode cruzar datas e parceiros — não depende de “confie em mim”.
+            </p>
+          </article>
+        </div>
+
+        <div class="proof-compare reveal">
+          <div class="callout">
+            <h3>IA gerada × foto de missão</h3>
+            <p>Sinais que separam as duas:</p>
+            <ul>
+              <li><strong>IA costuma</strong> fundir pessoa e planeta num único plano “mágico”, sem caixa, sem Pixel, sem logo de missão.</li>
+              <li><strong>Esta foto mostra</strong> um objeto fabricado (display) fotografado por outra câmera, com Terra de verdade atrás — composição em camadas físicas.</li>
+              <li><strong>Texto e branding</strong> batem com o portal e com o marketing oficial da CrunchLabs / Google Pixel.</li>
+              <li><strong>Óptica de LEO</strong>: curvatura + atmosfera coerentes com ~500&nbsp;km, não com fundo de estúdio ou matte painting.</li>
+            </ul>
+          </div>
+          <figure class="media-frame">
+            <img
+              src="assets/sat-gus-patch.png"
+              alt="Emblema da missão SAT GUS com bandeiras e logotipo CrunchLabs"
+              width="800"
+              height="800"
+              loading="lazy"
+              style="aspect-ratio: 1; object-fit: contain; background: oklch(0.1 0 0); padding: 1.5rem;"
+            />
+            <figcaption>Patch oficial da missão SAT GUS · Tyvak / CrunchLabs</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Jornada -->
+    <section id="jornada" aria-labelledby="jornada-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="jornada-title">Linha do tempo</h2>
+          <p>Da missão global até a nossa foto de volta em casa.</p>
+        </div>
+        <div class="timeline reveal">
+          <article class="timeline-item">
+            <div class="timeline-date">14 jan 2025</div>
+            <div class="timeline-body">
+              <h3>Lançamento do SAT GUS</h3>
+              <p>SpaceX Falcon 9 · Transporter-12. CubeSat 12U entra em órbita a ~500&nbsp;km.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">Mai 2025</div>
+            <div class="timeline-body">
+              <h3>SpaceSelfie.com aberto ao público</h3>
+              <p>Envio gratuito de fotos para a fila do satélite.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">+2 dias</div>
+            <div class="timeline-body">
+              <h3>Nossa foto embarca</h3>
+              <p>Dois dias após a abertura do site, a selfie do casal entra na jornada orbital.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">Espera</div>
+            <div class="timeline-body">
+              <h3>Fila no SAT GUS (~1 ano e 2 meses)</h3>
+              <p>
+                A maior parte do tempo é a fila: a selfie aguarda para ser exibida no Pixel e
+                fotografada em órbita. Nos primeiros lotes, a espera típica tem sido da ordem de
+                <strong>1 a 2 anos</strong>; no nosso caso, ~<strong>1&nbsp;ano e 2&nbsp;meses</strong>
+                do envio ao e-mail.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">27 jul 2026</div>
+            <div class="timeline-body">
+              <h3>E-mail com a foto — ontem</h3>
+              <p>
+                Chegou o arquivo oficial com selo CrunchLabs / SpaceSelfie.
+                Do upload ao e-mail: cerca de <strong>14 meses (~425 dias)</strong>.
+                O trecho captura → e-mail (downlink + processamento) costuma ser bem mais curto
+                que a fila; o arquivo não traz a hora exata do clique em órbita.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">28 jul 2026</div>
+            <div class="timeline-body">
+              <h3>Esta apresentação</h3>
+              <p>A prova no bolso — e a história de como ela chegou do espaço até aqui.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">Agora</div>
+            <div class="timeline-body">
+              <h3>SAT GUS ainda em órbita</h3>
+              <p>
+                O satélite continua voando (NORAD&nbsp;62713).
+                Veja a posição ao vivo na seção
+                <a href="#ao-vivo">Where is the satellite right now?</a>
+                (mapa N2YO, igual ao SpaceSelfie.com).
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fontes -->
+    <section id="fontes" class="sources" aria-labelledby="fontes-title">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2 id="fontes-title">Fontes e referências</h2>
+          <p>Para conferir fatos, parceiros e o funcionamento do satélite.</p>
+        </div>
+        <ol>
+          <li>
+            <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">Space Selfie / CrunchLabs</a>
+            — portal de envio e entrega das selfies.
+          </li>
+          <li>
+            <a href="https://tyvak.eu/missions/satgus/" target="_blank" rel="noopener noreferrer">Tyvak International — missão SAT GUS</a>
+            — CubeSat 12U, ~500&nbsp;km, órbita ~90&nbsp;min, parceria Mark Rober / CrunchLabs.
+          </li>
+          <li>
+            <a href="https://rdw.com/newsroom/redwire-partners-with-youtuber-mark-rober-and-crunchlabs-to-enable-a-unique-selfie-taking-satellite-for-steam-outreach/" target="_blank" rel="noopener noreferrer">Redwire</a>
+            — câmera de voo e captura HDR do display com a Terra ao fundo.
+          </li>
+          <li>
+            <a href="https://www.youtube.com/watch?v=qr1AvisQcV8" target="_blank" rel="noopener noreferrer">Mark Rober — “I Spent $5,000,000 So You Can Go To Space For FREE”</a>
+            — vídeo oficial da missão.
+          </li>
+          <li>
+            <a href="https://www.n2yo.com/satellite/?s=62713" target="_blank" rel="noopener noreferrer">N2YO — SAT GUS (NORAD 62713)</a>
+            — rastreamento ao vivo: posição, altitude e próximas passagens.
+          </li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="section-inner">
+      <p>
+        <strong>Nossa Selfie no Espaço</strong> · apresentação pessoal da foto retornada pelo SAT&nbsp;GUS.
+        Space Selfie, CrunchLabs, SAT GUS e marcas citadas pertencem aos respectivos donos.
+      </p>
+      <p>Feito com a foto real da missão · 2025–2026</p>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Selfie ampliada">
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Fechar">&times;</button>
+    <img src="assets/nossa-selfie-espacial.jpg" alt="Selfie espacial ampliada: casal no display do SAT GUS com a Terra ao fundo" width="2000" height="1500" />
+    <p class="lightbox-hint">Esc ou clique fora para fechar</p>
+  </dialog>
+
+  <script>
+    (function () {
+      const lightbox = document.getElementById("lightbox");
+      const openers = [document.getElementById("selfie-img")];
+      const closeBtn = document.getElementById("lightbox-close");
+
+      function openLb() {
+        if (typeof lightbox.showModal === "function") lightbox.showModal();
+        else lightbox.setAttribute("open", "");
+      }
+      function closeLb() {
+        if (typeof lightbox.close === "function") lightbox.close();
+        else lightbox.removeAttribute("open");
+      }
+
+      openers.forEach(function (el) {
+        if (!el) return;
+        el.addEventListener("click", openLb);
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openLb();
+          }
+        });
+      });
+      closeBtn.addEventListener("click", closeLb);
+      lightbox.addEventListener("click", function (e) {
+        if (e.target === lightbox) closeLb();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && lightbox.hasAttribute("open")) closeLb();
+      });
+
+      /* Reveal on scroll */
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce && "IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+        );
+        document.querySelectorAll(".reveal").forEach(function (el) {
+          io.observe(el);
+        });
+      } else {
+        document.querySelectorAll(".reveal").forEach(function (el) {
+          el.classList.add("is-visible");
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
