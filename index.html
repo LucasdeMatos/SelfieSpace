@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Nossa selfie oficial no espaço — capturada pelo SAT GUS (CrunchLabs / Mark Rober) a ~500 km de altitude, com a Terra ao fundo. Foto real, não gerada por IA." />
+  <meta name="description" content="Nossa selfie oficial no espaço — capturada pelo SAT GUS (CrunchLabs / Mark Rober) a ~500 km de altitude, com a Terra ao fundo." />
   <meta name="theme-color" content="#0a0a0a" />
   <title>Nossa Selfie no Espaço · SAT GUS · Space Selfie</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,7 +23,6 @@
       --accent-deep: oklch(0.45 0.1 250);
       --warm: oklch(0.78 0.14 55);
       --border: oklch(0.28 0.02 230);
-      --proof: oklch(0.78 0.16 145);
       --font-display: "Unbounded", system-ui, sans-serif;
       --font-body: "Source Sans 3", system-ui, sans-serif;
       --measure: 68ch;
@@ -567,60 +566,6 @@
     }
     .selfie-bar strong { color: var(--muted); font-weight: 600; }
 
-    /* ——— Proof / authenticity ——— */
-    .proof-section {
-      background: var(--surface);
-      border-block: 1px solid var(--border);
-    }
-    .proof-grid {
-      display: grid;
-      gap: 1rem;
-    }
-    @media (min-width: 700px) {
-      .proof-grid { grid-template-columns: 1fr 1fr; }
-    }
-    .proof-card {
-      padding: 1.35rem 1.4rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-    .proof-card h3 {
-      font-family: var(--font-display);
-      font-size: 0.98rem;
-      font-weight: 600;
-      margin: 0 0 0.55rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.55rem;
-      line-height: 1.3;
-    }
-    .proof-card h3 .mark {
-      flex-shrink: 0;
-      width: 1.35rem;
-      height: 1.35rem;
-      border-radius: 50%;
-      background: oklch(0.78 0.16 145 / 0.15);
-      color: var(--proof);
-      display: grid;
-      place-items: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-top: 0.1rem;
-    }
-    .proof-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    .proof-compare {
-      margin-top: 2rem;
-      display: grid;
-      gap: 1rem;
-    }
-    @media (min-width: 800px) {
-      .proof-compare { grid-template-columns: 1.2fr 1fr; align-items: center; }
-    }
     .callout {
       padding: 1.35rem 1.5rem;
       border-radius: var(--radius);
@@ -779,7 +724,6 @@
       <li><a href="#projeto">Projeto</a></li>
       <li><a href="#como-funciona">Como funciona</a></li>
       <li><a href="#selfie">A foto</a></li>
-      <li><a href="#autenticidade">Prova real</a></li>
       <li><a href="#jornada">Jornada</a></li>
       <li><a href="#ao-vivo">Onde está agora</a></li>
     </ul>
@@ -797,20 +741,16 @@
     </div>
     <div class="hero-content">
       <p class="hero-badge">Foto oficial · SAT GUS · LEO ~500 km</p>
-      <h1>Nossa selfie no espaço</h1>
+      <h1>Missão SAT&nbsp;GUS: 420 dias no espaço</h1>
       <p class="lede">
-        Eu e minha namorada no display do satélite SAT&nbsp;GUS, com a curva da Terra ao fundo —
-        capturada em órbita e devolvida à Terra ontem, após cerca de 1&nbsp;ano e 2&nbsp;meses.
-        Hardware real. Não é arte de IA.
+        Eu e ela a centenas de quilômetros de altitude.
       </p>
       <ul class="hero-meta">
         <li><strong>Missão</strong> Space Selfie · CrunchLabs</li>
         <li><strong>Satélite</strong> SAT GUS · NORAD 62713</li>
-        <li><strong>Display</strong> Google Pixel a bordo</li>
       </ul>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#selfie">Ver a foto completa</a>
-        <a class="btn btn-ghost" href="#autenticidade">Por que é real</a>
         <a class="btn btn-ghost" href="#ao-vivo">Onde está o satélite</a>
       </div>
     </div>
@@ -1001,7 +941,7 @@
                 <p>
                   Quando a órbita passa pela área pedida, a câmera de bordo (Redwire) fotografa o display
                   <em>com a Terra curva e o limbo atmosférico azul no fundo</em>.
-                  É esse enquadramento que prova a captura em órbita — e o porquê do mapa ao vivo
+                  É esse enquadramento que mostra a captura em órbita — e o porquê do mapa ao vivo
                   “Where is the satellite right now?” importar tanto.
                 </p>
               </div>
@@ -1168,95 +1108,6 @@
       </div>
     </section>
 
-    <!-- Autenticidade -->
-    <section class="proof-section" id="autenticidade" aria-labelledby="prova-title">
-      <div class="section-inner">
-        <div class="section-head reveal">
-          <h2 id="prova-title">Por que esta foto não é IA</h2>
-          <p>
-            Modelos de imagem inventam cenas “perfeitas”. A nossa foto carrega <strong>assinaturas de hardware
-            e de missão</strong> que um gerador não precisa inventar — e que batem com o que a CrunchLabs
-            e a Tyvak publicam sobre o SAT&nbsp;GUS.
-          </p>
-        </div>
-
-        <div class="proof-grid reveal">
-          <article class="proof-card">
-            <h3><span class="mark" aria-hidden="true">1</span> Hardware físico no enquadramento</h3>
-            <p>
-              O display não é um recorte flutuante: aparece a <strong>carcaça preta do módulo</strong>,
-              parafusos, bordas e a estrutura do satélite. Geradores de imagem raramente modelam
-              um produto de missão com essa coerência mecânica.
-            </p>
-          </article>
-          <article class="proof-card">
-            <h3><span class="mark" aria-hidden="true">2</span> Logos oficiais no metal</h3>
-            <p>
-              No topo do módulo: <strong>CRUNCHLABS</strong> e o símbolo da missão. Isso é marca
-              impressa no hardware voando — não um filtro aplicado depois num collage genérico.
-            </p>
-          </article>
-          <article class="proof-card">
-            <h3><span class="mark" aria-hidden="true">3</span> Google Pixel como tela, não como efeito</h3>
-            <p>
-              A selfie do casal está <strong>dentro da tela do Pixel</strong> (reflexos, proporção de
-              smartphone, moldura). A câmera do satélite fotografou o aparelho ligado no espaço —
-              exatamente o fluxo descrito pela Redwire e pela CrunchLabs.
-            </p>
-          </article>
-          <article class="proof-card">
-            <h3><span class="mark" aria-hidden="true">4</span> Limbo atmosférico e curva da Terra</h3>
-            <p>
-              O fundo mostra a <strong>curva do planeta</strong> e a fina faixa azul da atmosfera
-              (o “limb”), típica de fotos de órbita baixa (~500&nbsp;km). Nuvens e relevo têm
-              textura fotográfica irregular — não o “liso perfeito” de muitos renders de IA.
-            </p>
-          </article>
-          <article class="proof-card">
-            <h3><span class="mark" aria-hidden="true">5</span> Marca d’água de entrega da missão</h3>
-            <p>
-              Na base do arquivo oficial:
-              <em>“To get your CrunchLabs space selfie visit SpaceSelfie.com”</em> e
-              <em>“Displayed on Google Pixel”</em>. É o formato de entrega do programa, não um
-              watermark inventado em editor.
-            </p>
-          </article>
-          <article class="proof-card">
-            <h3><span class="mark" aria-hidden="true">6</span> Cadeia pública verificável</h3>
-            <p>
-              Missão anunciada por Mark Rober, satélite documentado pela Tyvak, câmera Redwire,
-              lançamento Falcon&nbsp;9 Transporter-12 (14/01/2025), portal SpaceSelfie.com.
-              Qualquer um pode cruzar datas e parceiros — não depende de “confie em mim”.
-            </p>
-          </article>
-        </div>
-
-        <div class="proof-compare reveal">
-          <div class="callout">
-            <h3>IA gerada × foto de missão</h3>
-            <p>Sinais que separam as duas:</p>
-            <ul>
-              <li><strong>IA costuma</strong> fundir pessoa e planeta num único plano “mágico”, sem caixa, sem Pixel, sem logo de missão.</li>
-              <li><strong>Esta foto mostra</strong> um objeto fabricado (display) fotografado por outra câmera, com Terra de verdade atrás — composição em camadas físicas.</li>
-              <li><strong>Texto e branding</strong> batem com o portal e com o marketing oficial da CrunchLabs / Google Pixel.</li>
-              <li><strong>Óptica de LEO</strong>: curvatura + atmosfera coerentes com ~500&nbsp;km, não com fundo de estúdio ou matte painting.</li>
-            </ul>
-          </div>
-          <figure class="media-frame">
-            <img
-              src="assets/sat-gus-patch.png"
-              alt="Emblema da missão SAT GUS com bandeiras e logotipo CrunchLabs"
-              width="800"
-              height="800"
-              loading="lazy"
-              style="aspect-ratio: 1; object-fit: contain; background: oklch(0.1 0 0); padding: 1.5rem;"
-            />
-            <figcaption>Patch oficial da missão SAT GUS · Tyvak / CrunchLabs</figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-
     <!-- Jornada -->
     <section id="jornada" aria-labelledby="jornada-title">
       <div class="section-inner">
@@ -1314,7 +1165,7 @@
             <div class="timeline-date">28 jul 2026</div>
             <div class="timeline-body">
               <h3>Esta apresentação</h3>
-              <p>A prova no bolso — e a história de como ela chegou do espaço até aqui.</p>
+              <p>A história de como a selfie chegou do espaço até aqui.</p>
             </div>
           </article>
           <article class="timeline-item">
