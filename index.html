@@ -116,6 +116,35 @@
     }
     .nav-links a:hover { color: var(--ink); }
 
+    /* Nav: single-row scroll on small screens (no multi-line wrap) */
+    @media (max-width: 760px) {
+      .site-nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.45rem;
+        padding: 0.65rem var(--pad) 0.5rem;
+      }
+      .site-nav .brand {
+        font-size: 0.7rem;
+      }
+      .site-nav .brand span { color: var(--primary); }
+      .nav-links {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.15rem 0.9rem;
+        padding: 0 0 0.2rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        mask-image: linear-gradient(to right, #000 88%, transparent);
+      }
+      .nav-links::-webkit-scrollbar { display: none; }
+      .nav-links li { flex: 0 0 auto; }
+      .nav-links a {
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+    }
+
     /* ——— Hero ——— */
     .hero {
       position: relative;
@@ -208,6 +237,73 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
+    }
+
+    /* Mobile hero: photo on top, copy below (no crushed full-screen overlay) */
+    @media (max-width: 760px) {
+      .hero {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .hero-media {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        max-height: min(58dvh, 480px);
+        flex-shrink: 0;
+      }
+      .hero-media img {
+        object-position: center 42%;
+      }
+      .hero-media::after {
+        background: linear-gradient(
+          to top,
+          oklch(0.08 0 0) 0%,
+          oklch(0.08 0 0 / 0.35) 28%,
+          transparent 55%
+        );
+      }
+      .hero-content {
+        padding: 1.15rem var(--pad) 1.85rem;
+        max-width: none;
+        background: var(--bg);
+      }
+      .hero-badge {
+        margin-bottom: 0.7rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.05em;
+        padding: 0.3rem 0.65rem;
+      }
+      .hero h1 {
+        font-size: clamp(1.4rem, 6.2vw + 0.4rem, 1.85rem);
+        max-width: none;
+        margin: 0 0 0.55rem;
+        line-height: 1.15;
+      }
+      .hero .lede {
+        font-size: 1.02rem;
+        max-width: none;
+        margin: 0 0 1rem;
+      }
+      .hero-meta {
+        margin: 0 0 1rem;
+        gap: 0.55rem 1.25rem;
+        font-size: 0.85rem;
+      }
+      .hero-meta strong {
+        font-size: 0.9rem;
+      }
+      .hero-actions {
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      .hero-actions .btn {
+        width: 100%;
+        padding: 0.78rem 1rem;
+      }
     }
     .btn {
       display: inline-flex;
@@ -782,7 +878,7 @@
                 O satélite ainda está em órbita (NORAD <strong>62713</strong>).
                 Abaixo, o mesmo mapa ao vivo do
                 <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">SpaceSelfie.com</a>
-                — “Where is the satellite right now?”.
+                — mapa ao vivo de onde o satélite está agora.
               </p>
             </div>
             <dl class="stats">
@@ -824,13 +920,13 @@
       </div>
     </section>
 
-    <!-- Where is the satellite right now? (widget oficial N2YO, igual SpaceSelfie.com) -->
+    <!-- Onde está o satélite agora (widget N2YO, igual SpaceSelfie.com) -->
     <section class="tracker-section" id="ao-vivo" aria-labelledby="ao-vivo-title">
       <div class="tracker-grid">
         <div class="tracker-map">
           <iframe
             src="https://www.n2yo.com/widgets/widget-tracker.php?s=62713&amp;size=large&amp;all=1&amp;me=10&amp;map=2&amp;tem=1&amp;layout=normal&amp;tle=1&amp;tp=1"
-            title="Where is the satellite right now? — rastreador ao vivo do SAT GUS (N2YO)"
+            title="Onde está o satélite agora — rastreador ao vivo do SAT GUS (N2YO)"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
             allowfullscreen
@@ -838,8 +934,7 @@
         </div>
         <div class="tracker-copy">
           <h2 id="ao-vivo-title">
-            Where is the satellite right now?
-            <span>Onde está o satélite agora?</span>
+            Onde está o satélite agora?
           </h2>
           <p>
             Acompanhe o <strong>SAT&nbsp;GUS</strong> em tempo real — o mesmo mapa do
@@ -857,7 +952,7 @@
               href="https://www.n2yo.com/satellite/?s=62713"
               target="_blank"
               rel="noopener noreferrer"
-            >More nerdy details (N2YO)</a>
+            >Mais detalhes no N2YO</a>
           </p>
           <p class="tracker-note">
             Widget powered by
@@ -942,7 +1037,7 @@
                   Quando a órbita passa pela área pedida, a câmera de bordo (Redwire) fotografa o display
                   <em>com a Terra curva e o limbo atmosférico azul no fundo</em>.
                   É esse enquadramento que mostra a captura em órbita — e o porquê do mapa ao vivo
-                  “Where is the satellite right now?” importar tanto.
+                  “Onde está o satélite agora?” importar tanto.
                 </p>
               </div>
             </li>
@@ -1175,7 +1270,7 @@
               <p>
                 O satélite continua voando (NORAD&nbsp;62713).
                 Veja a posição ao vivo na seção
-                <a href="#ao-vivo">Where is the satellite right now?</a>
+                <a href="#ao-vivo">Onde está o satélite agora?</a>
                 (mapa N2YO, igual ao SpaceSelfie.com).
               </p>
             </div>
