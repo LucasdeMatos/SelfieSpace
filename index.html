@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Nossa selfie oficial no espaço — capturada pelo SAT GUS (CrunchLabs / Mark Rober) a ~500 km de altitude, com a Terra ao fundo." />
+  <meta name="description" content="O projeto Space Selfie (CrunchLabs / Mark Rober): o satélite SAT GUS, como enviar uma foto e o que acontece em órbita a ~500 km." />
   <meta name="theme-color" content="#0a0a0a" />
-  <title>Nossa Selfie no Espaço · SAT GUS · Space Selfie</title>
+  <title>Space Selfie · SAT GUS · Missão em órbita</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -16,7 +16,7 @@
       --surface-2: oklch(0.18 0.016 230);
       --ink: oklch(0.97 0.008 230);
       --muted: oklch(0.72 0.02 230);
-      --faint: oklch(0.48 0.02 230);
+      --faint: oklch(0.58 0.02 230);
       --primary: oklch(0.82 0.15 113);
       --primary-dim: oklch(0.55 0.12 113);
       --accent: oklch(0.74 0.11 230);
@@ -34,7 +34,10 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 4.5rem;
+    }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after {
@@ -51,6 +54,7 @@
       line-height: 1.65;
       color: var(--ink);
       background: var(--bg);
+      color-scheme: dark;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
@@ -58,10 +62,11 @@
     img { max-width: 100%; height: auto; display: block; }
     a { color: var(--accent); text-underline-offset: 0.18em; }
     a:hover { color: var(--primary); }
-    a:focus-visible {
+    :focus-visible {
       outline: 2px solid var(--primary);
       outline-offset: 3px;
     }
+    :focus:not(:focus-visible) { outline: none; }
 
     .skip {
       position: absolute;
@@ -72,8 +77,14 @@
       padding: 0.75rem 1rem;
       z-index: 300;
       font-weight: 700;
+      text-decoration: none;
     }
     .skip:focus { left: var(--pad); top: 0.75rem; }
+
+    section[id],
+    header[id] {
+      scroll-margin-top: 4.5rem;
+    }
 
     /* ——— Nav ——— */
     .site-nav {
@@ -113,8 +124,13 @@
       text-decoration: none;
       font-size: 0.92rem;
       font-weight: 500;
+      padding: 0.35rem 0;
+      min-height: 2.5rem;
+      display: inline-flex;
+      align-items: center;
     }
     .nav-links a:hover { color: var(--ink); }
+    .site-nav .brand:hover { color: var(--ink); }
 
     /* Nav: single-row scroll on small screens (no multi-line wrap) */
     @media (max-width: 760px) {
@@ -198,7 +214,7 @@
       height: 0.45rem;
       border-radius: 50%;
       background: var(--primary);
-      box-shadow: 0 0 10px var(--primary);
+      flex-shrink: 0;
     }
     .hero h1 {
       font-family: var(--font-display);
@@ -311,10 +327,12 @@
       justify-content: center;
       gap: 0.4rem;
       padding: 0.8rem 1.25rem;
+      min-height: 2.75rem;
       border-radius: 999px;
       font-family: var(--font-body);
       font-weight: 700;
       font-size: 0.95rem;
+      line-height: 1.2;
       text-decoration: none;
       border: 1px solid transparent;
       cursor: pointer;
@@ -366,6 +384,20 @@
       color: var(--muted);
       max-width: 58ch;
       text-wrap: pretty;
+    }
+    .section-subhead {
+      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 1rem + 0.8vw, 1.45rem);
+      font-weight: 600;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .section-bridge {
+      margin: 2rem 0 0;
+    }
+    .block-gap {
+      margin-top: clamp(2.5rem, 5vw, 4rem);
     }
     .prose {
       max-width: var(--measure);
@@ -595,6 +627,9 @@
       transition: background 0.25s var(--ease-out);
     }
     .video-thumb .play:hover { background: oklch(0 0 0 / 0.2); }
+    .video-thumb .play:focus-visible {
+      outline-offset: -4px;
+    }
     .play-icon {
       width: 4.25rem;
       height: 4.25rem;
@@ -649,10 +684,14 @@
       object-position: center 60%;
       cursor: zoom-in;
     }
+    .selfie-stage img:focus-visible {
+      outline-offset: -4px;
+    }
     .selfie-bar {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
+      align-items: baseline;
       gap: 0.5rem 1rem;
       padding: 0.85rem 1.1rem;
       background: oklch(0.1 0 0);
@@ -661,6 +700,12 @@
       color: var(--faint);
     }
     .selfie-bar strong { color: var(--muted); font-weight: 600; }
+    @media (max-width: 520px) {
+      .selfie-bar {
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+    }
 
     .callout {
       padding: 1.35rem 1.5rem;
@@ -673,6 +718,7 @@
       font-size: 1rem;
       margin: 0 0 0.6rem;
       color: var(--primary);
+      letter-spacing: -0.01em;
     }
     .callout p {
       margin: 0;
@@ -786,8 +832,14 @@
       font-size: 1.4rem;
       cursor: pointer;
       line-height: 1;
+      display: grid;
+      place-items: center;
+      padding: 0;
     }
     .lightbox-close:hover { background: oklch(0.22 0 0); }
+    .lightbox::backdrop {
+      background: oklch(0.05 0 0 / 0.72);
+    }
     .lightbox-hint {
       position: absolute;
       bottom: 1rem;
@@ -815,70 +867,73 @@
   <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
   <nav class="site-nav" aria-label="Navegação principal">
-    <a class="brand" href="#topo">Space Selfie <span>· Nossa órbita</span></a>
+    <a class="brand" href="#topo">Space Selfie <span>· SAT GUS</span></a>
     <ul class="nav-links">
-      <li><a href="#projeto">Projeto</a></li>
-      <li><a href="#como-funciona">Como funciona</a></li>
-      <li><a href="#selfie">A foto</a></li>
-      <li><a href="#jornada">Jornada</a></li>
-      <li><a href="#ao-vivo">Onde está agora</a></li>
+      <li><a href="#projeto">O projeto</a></li>
+      <li><a href="#participar">Como participar</a></li>
+      <li><a href="#envio">O que eu fiz</a></li>
+      <li><a href="#ao-vivo">Satélite ao vivo</a></li>
     </ul>
   </nav>
 
   <header class="hero" id="topo">
     <div class="hero-media" aria-hidden="true">
       <img
-        src="assets/nossa-selfie-espacial.jpg"
+        src="assets/earth-from-space.jpg"
         alt=""
         width="1600"
-        height="1200"
+        height="1067"
         fetchpriority="high"
       />
     </div>
     <div class="hero-content">
-      <p class="hero-badge">Foto oficial · SAT GUS · LEO ~500 km</p>
-      <h1>Missão SAT&nbsp;GUS: 420 dias no espaço</h1>
+      <p class="hero-badge">Missão · SAT GUS · LEO ~500 km</p>
+      <h1>Eu enviei uma foto para o espaço</h1>
       <p class="lede">
-        Eu e ela a centenas de quilômetros de altitude.
+        Um satélite real, um Google Pixel em órbita e uma fila de mais de um ano.
+        Esta página conta o projeto, como participar e o que eu fiz.
       </p>
       <ul class="hero-meta">
         <li><strong>Missão</strong> Space Selfie · CrunchLabs</li>
         <li><strong>Satélite</strong> SAT GUS · NORAD 62713</li>
       </ul>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#selfie">Ver a foto completa</a>
-        <a class="btn btn-ghost" href="#ao-vivo">Onde está o satélite</a>
+        <a class="btn btn-primary" href="#projeto">Começar pelo projeto</a>
+        <a class="btn btn-ghost" href="#participar">Como participar</a>
       </div>
     </div>
   </header>
 
   <main id="conteudo">
-    <!-- Projeto -->
+    <!-- 1. O QUE É O PROJETO -->
     <section id="projeto" aria-labelledby="projeto-title">
       <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="projeto-title">1. O que é o projeto</h2>
+          <p>
+            O que é o Space Selfie, quem criou e o que é o satélite SAT&nbsp;GUS — sem a parte pessoal ainda.
+          </p>
+        </div>
+
         <div class="split reveal">
           <div>
-            <div class="section-head" style="margin-bottom: 1.25rem;">
-              <h2 id="projeto-title">Introdução ao projeto Space Selfie</h2>
-            </div>
             <div class="prose">
               <p>
-                O projeto <strong>Space Selfie</strong> da <strong>CrunchLabs</strong>, idealizado pelo
-                engenheiro e youtuber <strong>Mark Rober</strong>, é um marco na democratização do acesso ao espaço.
-                Lançado em <strong>14 de janeiro de 2025</strong>, permitiu que pessoas de todo o mundo enviassem
-                fotos para serem exibidas em um satélite em órbita terrestre: o <strong>SAT&nbsp;GUS</strong>.
+                O <strong>Space Selfie</strong> é um projeto da <strong>CrunchLabs</strong>, idealizado pelo
+                engenheiro e youtuber <strong>Mark Rober</strong>. A ideia: qualquer pessoa pode enviar uma foto
+                para ser <strong>exibida no espaço</strong> e fotografada de volta com a Terra ao fundo.
               </p>
               <p>
-                O SAT&nbsp;GUS é um <strong>CubeSat 12U</strong> que orbita a Terra a aproximadamente
-                <strong>500&nbsp;km</strong> de altitude. Ele exibe imagens em uma tela e as fotografa com a
-                Terra como pano de fundo, usando um <strong>Google Pixel</strong> a bordo. O sonho de ter uma
-                “selfie” no espaço virou algo acessível — e documentado.
+                O satélite da missão é o <strong>SAT&nbsp;GUS</strong>, um <strong>CubeSat 12U</strong>
+                construído pela <strong>Tyvak International</strong>, lançado em
+                <strong>14 de janeiro de 2025</strong> a bordo de um <strong>SpaceX Falcon&nbsp;9</strong>
+                (missão Transporter-12). Ele orbita a cerca de <strong>500&nbsp;km</strong> de altitude
+                (LEO) e completa uma volta na Terra a cada ~90&nbsp;minutos.
               </p>
               <p>
-                O satélite ainda está em órbita (NORAD <strong>62713</strong>).
-                Abaixo, o mesmo mapa ao vivo do
-                <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">SpaceSelfie.com</a>
-                — mapa ao vivo de onde o satélite está agora.
+                A bordo há um <strong>Google Pixel</strong> que mostra a foto enviada, e uma câmera de voo
+                da <strong>Redwire</strong> que fotografa essa tela com a curvatura da Terra e o limbo
+                atmosférico azul no fundo. Parceiros da missão incluem também a <strong>T-Mobile</strong>.
               </p>
             </div>
             <dl class="stats">
@@ -899,9 +954,6 @@
                 <dd>62713</dd>
               </div>
             </dl>
-            <p style="margin: 1.25rem 0 0;">
-              <a class="btn btn-primary" href="#ao-vivo">Ver posição ao vivo</a>
-            </p>
           </div>
           <figure class="media-frame">
             <img
@@ -917,172 +969,8 @@
             </figcaption>
           </figure>
         </div>
-      </div>
-    </section>
 
-    <!-- Onde está o satélite agora (widget N2YO, igual SpaceSelfie.com) -->
-    <section class="tracker-section" id="ao-vivo" aria-labelledby="ao-vivo-title">
-      <div class="tracker-grid">
-        <div class="tracker-map">
-          <iframe
-            src="https://www.n2yo.com/widgets/widget-tracker.php?s=62713&amp;size=large&amp;all=1&amp;me=10&amp;map=2&amp;tem=1&amp;layout=normal&amp;tle=1&amp;tp=1"
-            title="Onde está o satélite agora — rastreador ao vivo do SAT GUS (N2YO)"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-          ></iframe>
-        </div>
-        <div class="tracker-copy">
-          <h2 id="ao-vivo-title">
-            Onde está o satélite agora?
-          </h2>
-          <p>
-            Acompanhe o <strong>SAT&nbsp;GUS</strong> em tempo real — o mesmo mapa do
-            <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">SpaceSelfie.com</a>.
-            Ela corre a cerca de <strong>27.000&nbsp;km/h</strong> (~17.000&nbsp;mph), a ~300–500&nbsp;km de altitude,
-            e completa uma volta na Terra a cada ~90&nbsp;minutos.
-          </p>
-          <p>
-            No mapa: posição atual, trilha orbital, próximas passagens sobre a sua localização
-            e dados TLE. NORAD&nbsp;<strong>62713</strong>.
-          </p>
-          <p>
-            <a
-              class="btn btn-primary"
-              href="https://www.n2yo.com/satellite/?s=62713"
-              target="_blank"
-              rel="noopener noreferrer"
-            >Mais detalhes no N2YO</a>
-          </p>
-          <p class="tracker-note">
-            Widget powered by
-            <a href="https://www.n2yo.com/" target="_blank" rel="noopener noreferrer">N2YO.com</a>
-            — o mesmo embed usado em spaceselfie.com. Precisa de internet para carregar o mapa ao vivo.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Como funciona -->
-    <section class="how" id="como-funciona" aria-labelledby="como-title">
-      <div class="section-inner">
-        <div class="section-head reveal">
-          <h2 id="como-title">Como funciona na prática</h2>
-          <p>
-            Não é magia de software: é um satélite físico, um celular real no espaço e uma câmera de
-            voo que fotografa a tela com o planeta atrás. Você manda a selfie <strong>e escolhe a cidade</strong>
-            onde quer que a foto seja tirada. Passo a passo:
-          </p>
-        </div>
-
-        <div class="steps-with-visual reveal">
-          <ol class="steps">
-            <li class="step">
-              <span class="step-num" aria-hidden="true">01</span>
-              <div>
-                <h3>Você envia a foto</h3>
-                <p>
-                  No site <a href="https://www.spaceselfie.com/" rel="noopener noreferrer" target="_blank">SpaceSelfie.com</a>
-                  (portal CrunchLabs), o público envia a selfie. Em maio de 2025 o site abriu para todos;
-                  a nossa foto entrou na fila poucos dias depois.
-                </p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step-num" aria-hidden="true">02</span>
-              <div>
-                <h3>Você escolhe onde a foto será tirada</h3>
-                <p>
-                  Além da imagem, você indica a <strong>cidade / localização</strong> desejada.
-                  A ideia é o SAT&nbsp;GUS capturar a selfie quando estiver
-                  <strong>sobrevoando aquela região</strong> — o “photobomb” da Terra por trás do
-                  display fica alinhado com o lugar que você pediu (Mark Rober falava em tirar
-                  a foto “over your city” / perto da sua casa).
-                </p>
-                <p style="margin-top: 0.55rem;">
-                  Importante: o satélite <strong>não fotografa vocês no chão</strong>. A selfie de vocês
-                  está na tela do Pixel; a câmera espacial fotografa esse display com o planeta ao fundo.
-                  A cidade escolhida define <strong>sobre qual pedaço da Terra</strong> o clique deve acontecer —
-                  não é garantia de “minha casa no centro do quadro”, e sim do fundo orbital daquela região.
-                </p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step-num" aria-hidden="true">03</span>
-              <div>
-                <h3>A imagem sobe para o SAT GUS</h3>
-                <p>
-                  A foto (e a preferência de localização) é transmitida ao satélite em LEO (~500&nbsp;km).
-                  O SAT&nbsp;GUS foi construído pela <strong>Tyvak International</strong> (Turim), com câmera
-                  de voo da <strong>Redwire</strong> e parcerias com Google Pixel e T-Mobile.
-                </p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step-num" aria-hidden="true">04</span>
-              <div>
-                <h3>O Pixel exibe a selfie</h3>
-                <p>
-                  Um <strong>Google Pixel</strong> comercial, montado no módulo de display do satélite,
-                  mostra a sua foto na tela. É literalmente o mesmo tipo de aparelho que usamos no chão —
-                  só que em órbita.
-                </p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step-num" aria-hidden="true">05</span>
-              <div>
-                <h3>A câmera espacial dispara (sobre a região escolhida)</h3>
-                <p>
-                  Quando a órbita passa pela área pedida, a câmera de bordo (Redwire) fotografa o display
-                  <em>com a Terra curva e o limbo atmosférico azul no fundo</em>.
-                  É esse enquadramento que mostra a captura em órbita — e o porquê do mapa ao vivo
-                  “Onde está o satélite agora?” importar tanto.
-                </p>
-              </div>
-            </li>
-            <li class="step">
-              <span class="step-num" aria-hidden="true">06</span>
-              <div>
-                <h3>O arquivo volta à Terra</h3>
-                <p>
-                  A imagem é enviada de volta pelos sistemas de solo da missão e entregue por e-mail —
-                  com marca d’água oficial CrunchLabs / SpaceSelfie e a legenda
-                  “Displayed on Google Pixel”.
-                </p>
-              </div>
-            </li>
-          </ol>
-
-          <figure class="media-frame">
-            <img
-              src="assets/earth-from-space.jpg"
-              alt="Curvatura da Terra e atmosfera azul vistas do espaço, com estrutura de espaçonave à direita"
-              width="1600"
-              height="1067"
-              loading="lazy"
-            />
-            <figcaption>
-              Referência visual de LEO: curva da Terra e atmosfera — o mesmo tipo de “limbo” azul
-              que aparece atrás do display na nossa foto
-            </figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-
-    <!-- Missão / vídeo -->
-    <section id="missao" aria-labelledby="missao-title">
-      <div class="section-inner">
-        <div class="section-head reveal">
-          <h2 id="missao-title">A missão original e o vídeo</h2>
-          <p>
-            Mark Rober liderou o desenvolvimento do SAT&nbsp;GUS. O lançamento (Falcon&nbsp;9 Transporter-12)
-            e toda a ciência por trás do projeto estão no vídeo oficial.
-          </p>
-        </div>
-
-        <div class="video-block reveal">
+        <div class="video-block reveal block-gap">
           <div class="video-thumb">
             <img
               src="assets/rocket-launch.jpg"
@@ -1104,10 +992,9 @@
             </a>
           </div>
           <div class="video-copy">
-            <h3>I Spent $5,000,000 So You Can Go To Space For FREE</h3>
+            <h3>Vídeo oficial da missão (Mark Rober)</h3>
             <p>
-              Documentário da missão: da concepção ao satélite em órbita, e por que a selfie ficou
-              gratuita para o planeta. Canal oficial Mark Rober.
+              Da concepção ao lançamento do SAT&nbsp;GUS, e por que a selfie ficou gratuita para o planeta.
             </p>
             <p>
               <a class="btn btn-primary" href="https://www.youtube.com/watch?v=qr1AvisQcV8" target="_blank" rel="noopener noreferrer">
@@ -1117,8 +1004,233 @@
           </div>
         </div>
 
-        <div class="split reverse" style="margin-top: clamp(2.5rem, 5vw, 4rem);">
-          <figure class="media-frame reveal">
+        <p class="reveal section-bridge">
+          <a class="btn btn-ghost" href="#participar">Próximo: como participar →</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. COMO PARTICIPAR -->
+    <section class="how" id="participar" aria-labelledby="participar-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="participar-title">2. Como participar</h2>
+          <p>
+            O fluxo geral para qualquer pessoa: o que se envia, o que o satélite faz e o que volta por e-mail.
+            A minha história vem na seção seguinte.
+          </p>
+        </div>
+
+        <div class="steps-with-visual reveal">
+          <ol class="steps">
+            <li class="step">
+              <span class="step-num" aria-hidden="true">01</span>
+              <div>
+                <h3>Envie a foto no site</h3>
+                <p>
+                  No portal
+                  <a href="https://www.spaceselfie.com/" rel="noopener noreferrer" target="_blank">SpaceSelfie.com</a>
+                  (CrunchLabs), você faz o upload da selfie. Em maio de 2025 o envio ficou aberto ao público.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">02</span>
+              <div>
+                <h3>Escolha onde a foto será tirada</h3>
+                <p>
+                  Além da imagem, você indica a <strong>cidade / localização</strong> desejada.
+                  A ideia é o SAT&nbsp;GUS capturar a selfie quando estiver
+                  <strong>sobrevoando aquela região</strong>: o “photobomb” da Terra por trás do
+                  display fica alinhado com o lugar pedido (Mark Rober falava em tirar a foto
+                  “over your city” / perto da sua casa).
+                </p>
+                <p style="margin-top: 0.55rem;">
+                  <strong>Importante:</strong> o satélite <strong>não fotografa você no chão</strong>.
+                  A selfie fica na tela do Pixel; a câmera espacial fotografa esse display com o planeta ao fundo.
+                  A cidade define <strong>sobre qual pedaço da Terra</strong> o clique deve acontecer,
+                  não a garantia de “minha casa no centro do quadro”.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">03</span>
+              <div>
+                <h3>A foto sobe para o SAT GUS</h3>
+                <p>
+                  A imagem e a preferência de localização são transmitidas ao satélite em LEO (~500&nbsp;km).
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">04</span>
+              <div>
+                <h3>O Pixel exibe a selfie em órbita</h3>
+                <p>
+                  Um <strong>Google Pixel</strong> comercial, montado no módulo de display do satélite,
+                  mostra a foto na tela, no espaço.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">05</span>
+              <div>
+                <h3>A câmera espacial dispara</h3>
+                <p>
+                  Quando a órbita passa pela área pedida, a câmera Redwire fotografa o display
+                  <em>com a Terra curva e o limbo atmosférico azul no fundo</em>.
+                </p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">06</span>
+              <div>
+                <h3>O arquivo volta por e-mail</h3>
+                <p>
+                  A imagem desce pelos sistemas de solo e chega por e-mail, com marca d’água oficial
+                  CrunchLabs / SpaceSelfie e a legenda “Displayed on Google Pixel”.
+                  A espera costuma ser da ordem de <strong>1 a 2 anos</strong> (quase toda na fila).
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <figure class="media-frame">
+            <img
+              src="assets/earth-from-space.jpg"
+              alt="Curvatura da Terra e atmosfera azul vistas do espaço, com estrutura de espaçonave à direita"
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <figcaption>
+              Referência de LEO: curva da Terra e atmosfera azul, o tipo de “limbo” que aparece
+              atrás do display nas fotos oficiais
+            </figcaption>
+          </figure>
+        </div>
+
+        <p class="reveal section-bridge">
+          <a class="btn btn-ghost" href="#envio">Próximo: o que eu fiz →</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. O QUE EU FIZ → revela a foto no fim -->
+    <section class="showcase" id="envio" aria-labelledby="envio-title">
+      <div class="section-inner">
+        <div class="section-head reveal">
+          <h2 id="envio-title">3. O que eu fiz</h2>
+          <p>
+            Eu enviei a foto. A fila foi longa. O e-mail demorou.
+          </p>
+        </div>
+
+        <div class="prose reveal" style="margin-bottom: 1.75rem;">
+          <p>
+            Em <strong>maio de 2025</strong>, assim que o SpaceSelfie.com abriu para o público,
+            <strong>eu enviei uma foto</strong> para a fila do SAT&nbsp;GUS — dois dias depois da abertura.
+            Escolhi a localização e entrei na mesma fila de todo mundo.
+          </p>
+          <p>
+            A espera, no meu caso, durou cerca de <strong>1&nbsp;ano e 2&nbsp;meses</strong>
+            (~14 meses / ~425 dias) do upload até o e-mail oficial, em
+            <strong>27 de julho de 2026</strong>.
+          </p>
+        </div>
+
+        <div class="callout reveal" style="margin-bottom: 2rem;">
+          <h3>A espera (envio → e-mail)</h3>
+          <p>
+            Quase todo esse tempo é a <strong>fila</strong>: a foto aguarda vez para ser exibida no Pixel
+            e fotografada em órbita. Nos primeiros lotes, relatos públicos falam em algo entre
+            <strong>1 e 2 anos</strong>.
+          </p>
+          <ul>
+            <li>
+              <strong>Depois do “clique” no espaço:</strong> downlink e processamento no solo costumam
+              ser bem mais curtos (dias, não anos).
+            </li>
+            <li>
+              O arquivo oficial <strong>não traz a hora exata</strong> da captura em órbita;
+              o número confiável que eu tenho é o intervalo <em>envio → e-mail</em>.
+            </li>
+          </ul>
+        </div>
+
+        <div class="section-head reveal" style="margin-bottom: 1rem;">
+          <h3 class="section-subhead">Linha do tempo do envio</h3>
+          <p>Do upload ao e-mail — só a minha parte.</p>
+        </div>
+        <div class="timeline reveal">
+          <article class="timeline-item">
+            <div class="timeline-date">Mai 2025</div>
+            <div class="timeline-body">
+              <h3>Site aberto ao público</h3>
+              <p>SpaceSelfie.com libera envio gratuito de fotos para a fila do satélite.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">+2 dias</div>
+            <div class="timeline-body">
+              <h3>Eu enviei a foto</h3>
+              <p>Dois dias após a abertura, a imagem entrou na fila do SAT&nbsp;GUS.</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">Fila</div>
+            <div class="timeline-body">
+              <h3>~1 ano e 2 meses</h3>
+              <p>
+                A maior parte do tempo é a fila para exibir no Pixel e fotografar em órbita.
+              </p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-date">27 jul 2026</div>
+            <div class="timeline-body">
+              <h3>O e-mail chegou</h3>
+              <p>
+                Arquivo oficial CrunchLabs / SpaceSelfie na caixa de entrada.
+                Do upload ao e-mail: ~<strong>14 meses (~425 dias)</strong>.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Surpresa: a foto só aparece aqui, depois da história -->
+        <div class="reveal block-gap" id="selfie">
+          <div class="section-head" style="margin-bottom: 1.25rem;">
+            <h3 id="selfie-title" class="section-subhead">
+              E então… o arquivo abriu
+            </h3>
+            <p>
+              Depois de mais de um ano na fila, isto é o que voltou do satélite.
+              Clique para ampliar.
+            </p>
+          </div>
+          <figure class="selfie-stage">
+            <img
+              id="selfie-img"
+              src="assets/nossa-selfie-espacial.jpg"
+              alt="Foto oficial Space Selfie: casal em um Google Pixel a bordo do SAT GUS, com a curvatura da Terra e o limbo atmosférico azul ao fundo; logos CrunchLabs no hardware e faixa oficial SpaceSelfie.com"
+              width="1600"
+              height="1200"
+              loading="lazy"
+              tabindex="0"
+              role="button"
+              aria-label="Ampliar a foto que voltou do satélite"
+            />
+            <div class="selfie-bar">
+              <span><strong>E-mail:</strong> 27 jul 2026 · ~1 ano e 2 meses após o envio</span>
+              <span><strong>Display:</strong> Google Pixel · CrunchLabs</span>
+              <span>Clique na imagem para ampliar</span>
+            </div>
+          </figure>
+        </div>
+
+        <div class="split reverse reveal block-gap">
+          <figure class="media-frame">
             <img
               src="assets/earth-blue-marble.jpg"
               alt="Terra à noite vista do espaço, com cidades iluminadas e faixa da atmosfera no horizonte"
@@ -1126,155 +1238,60 @@
               height="1067"
               loading="lazy"
             />
-            <figcaption>Terra em órbita baixa — o “palco” permanente do SAT GUS a cada ~90 minutos</figcaption>
+            <figcaption>A Terra em LEO: o “palco” permanente do SAT GUS a cada ~90 minutos</figcaption>
           </figure>
-          <div class="prose reveal">
+          <div class="prose">
             <p>
-              Parceiros da missão incluem <strong>CrunchLabs</strong>, <strong>Tyvak International</strong>,
-              <strong>Redwire</strong> (câmera), <strong>Google Pixel</strong> (display) e
-              <strong>T-Mobile</strong>. Lançamento a bordo do <strong>SpaceX Falcon&nbsp;9</strong>
-              (missão Transporter-12), em 14 de janeiro de 2025.
+              O SAT&nbsp;GUS continua em órbita (NORAD&nbsp;<strong>62713</strong>).
+              Se quiser ver onde ele está agora, o mapa ao vivo está logo abaixo.
             </p>
-            <p>
-              Fontes oficiais e técnicas estão listadas no final desta página — para quem quiser
-              conferir os números e a arquitetura do satélite.
+            <p class="section-bridge">
+              <a class="btn btn-primary" href="#ao-vivo">Ver satélite ao vivo</a>
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- A selfie -->
-    <section class="showcase" id="selfie" aria-labelledby="selfie-title">
-      <div class="section-inner">
-        <div class="section-head reveal">
-          <h2 id="selfie-title">Nossa selfie espacial</h2>
-          <p>
-            Em maio de 2025, o SpaceSelfie.com abriu para o público. Dois dias depois, a nossa foto
-            entrou na jornada. Depois de cerca de <strong>1&nbsp;ano e 2&nbsp;meses</strong> de
-            fila e captura em órbita, o arquivo voltou à Terra:
-            <strong>recebemos a foto por e-mail ontem, 27 de julho de 2026</strong> — pronta para ser revelada.
-          </p>
-        </div>
-
-        <div class="callout reveal" style="margin-bottom: 1.75rem;">
-          <h3>Tempo até chegar no e-mail</h3>
-          <p>
-            No nosso caso, entre o <strong>envio da foto</strong> (maio de 2025) e o
-            <strong>e-mail com o arquivo oficial</strong> (27 de julho de 2026) passaram cerca de
-            <strong>1&nbsp;ano e 2&nbsp;meses</strong> — em média, essa é a ordem de grandeza da espera
-            dos primeiros lotes (relatos públicos falam em algo entre ~1 e 2 anos na fila do SAT&nbsp;GUS).
-          </p>
-          <ul>
-            <li>
-              <strong>Quase toda a espera é a fila:</strong> a selfie fica aguardando vez para ser
-              exibida no Pixel e fotografada em órbita.
-            </li>
-            <li>
-              <strong>Depois do “clique” no espaço:</strong> o arquivo ainda passa por downlink e
-              processamento no solo antes de cair na caixa de entrada — em geral bem mais curto
-              que a fila (dias, não anos). A foto que recebemos não traz nos metadados a hora
-              exata da captura, então o número confiável que temos é o <em>envio → e-mail</em>.
-            </li>
-            <li>
-              <strong>Nosso intervalo:</strong> ~14 meses (~425 dias) do upload ao e-mail.
-            </li>
-          </ul>
-        </div>
-
-        <figure class="selfie-stage reveal">
-          <img
-            id="selfie-img"
-            src="assets/nossa-selfie-espacial.jpg"
-            alt="Foto oficial Space Selfie: casal em um Google Pixel a bordo do SAT GUS, com a curvatura da Terra e o limbo atmosférico azul ao fundo; logos CrunchLabs no hardware e faixa oficial SpaceSelfie.com"
-            width="1600"
-            height="1200"
+    <!-- EXTRA: satélite ao vivo (depois da história pessoal) -->
+    <section class="tracker-section" id="ao-vivo" aria-labelledby="ao-vivo-title">
+      <div class="tracker-grid">
+        <div class="tracker-map">
+          <iframe
+            src="https://www.n2yo.com/widgets/widget-tracker.php?s=62713&amp;size=large&amp;all=1&amp;me=10&amp;map=2&amp;tem=1&amp;layout=normal&amp;tle=1&amp;tp=1"
+            title="Onde está o satélite agora: rastreador ao vivo do SAT GUS (N2YO)"
             loading="lazy"
-            tabindex="0"
-            role="button"
-            aria-label="Ampliar a selfie espacial"
-          />
-          <div class="selfie-bar">
-            <span><strong>E-mail:</strong> 27 jul 2026 · ~1 ano e 2 meses após o envio</span>
-            <span><strong>Display:</strong> Google Pixel · CrunchLabs</span>
-            <span>Clique na imagem para ampliar</span>
-          </div>
-        </figure>
-      </div>
-    </section>
-
-    <!-- Jornada -->
-    <section id="jornada" aria-labelledby="jornada-title">
-      <div class="section-inner">
-        <div class="section-head reveal">
-          <h2 id="jornada-title">Linha do tempo</h2>
-          <p>Da missão global até a nossa foto de volta em casa.</p>
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
         </div>
-        <div class="timeline reveal">
-          <article class="timeline-item">
-            <div class="timeline-date">14 jan 2025</div>
-            <div class="timeline-body">
-              <h3>Lançamento do SAT GUS</h3>
-              <p>SpaceX Falcon 9 · Transporter-12. CubeSat 12U entra em órbita a ~500&nbsp;km.</p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-date">Mai 2025</div>
-            <div class="timeline-body">
-              <h3>SpaceSelfie.com aberto ao público</h3>
-              <p>Envio gratuito de fotos para a fila do satélite.</p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-date">+2 dias</div>
-            <div class="timeline-body">
-              <h3>Nossa foto embarca</h3>
-              <p>Dois dias após a abertura do site, a selfie do casal entra na jornada orbital.</p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-date">Espera</div>
-            <div class="timeline-body">
-              <h3>Fila no SAT GUS (~1 ano e 2 meses)</h3>
-              <p>
-                A maior parte do tempo é a fila: a selfie aguarda para ser exibida no Pixel e
-                fotografada em órbita. Nos primeiros lotes, a espera típica tem sido da ordem de
-                <strong>1 a 2 anos</strong>; no nosso caso, ~<strong>1&nbsp;ano e 2&nbsp;meses</strong>
-                do envio ao e-mail.
-              </p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-date">27 jul 2026</div>
-            <div class="timeline-body">
-              <h3>E-mail com a foto — ontem</h3>
-              <p>
-                Chegou o arquivo oficial com selo CrunchLabs / SpaceSelfie.
-                Do upload ao e-mail: cerca de <strong>14 meses (~425 dias)</strong>.
-                O trecho captura → e-mail (downlink + processamento) costuma ser bem mais curto
-                que a fila; o arquivo não traz a hora exata do clique em órbita.
-              </p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-date">28 jul 2026</div>
-            <div class="timeline-body">
-              <h3>Esta apresentação</h3>
-              <p>A história de como a selfie chegou do espaço até aqui.</p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-date">Agora</div>
-            <div class="timeline-body">
-              <h3>SAT GUS ainda em órbita</h3>
-              <p>
-                O satélite continua voando (NORAD&nbsp;62713).
-                Veja a posição ao vivo na seção
-                <a href="#ao-vivo">Onde está o satélite agora?</a>
-                (mapa N2YO, igual ao SpaceSelfie.com).
-              </p>
-            </div>
-          </article>
+        <div class="tracker-copy">
+          <h2 id="ao-vivo-title">
+            Onde está o satélite agora?
+          </h2>
+          <p>
+            Acompanhe o <strong>SAT&nbsp;GUS</strong> em tempo real: o mesmo mapa do
+            <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">SpaceSelfie.com</a>.
+            Ele corre a cerca de <strong>27.000&nbsp;km/h</strong> (~17.000&nbsp;mph), a ~300–500&nbsp;km de altitude,
+            e completa uma volta na Terra a cada ~90&nbsp;minutos.
+          </p>
+          <p>
+            No mapa: posição atual, trilha orbital, próximas passagens e dados TLE.
+            NORAD&nbsp;<strong>62713</strong>.
+          </p>
+          <p>
+            <a
+              class="btn btn-primary"
+              href="https://www.n2yo.com/satellite/?s=62713"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Mais detalhes no N2YO</a>
+          </p>
+          <p class="tracker-note">
+            Mapa de
+            <a href="https://www.n2yo.com/" target="_blank" rel="noopener noreferrer">N2YO.com</a>
+            (o mesmo embed do spaceselfie.com). Precisa de internet para carregar ao vivo.
+          </p>
         </div>
       </div>
     </section>
@@ -1288,24 +1305,24 @@
         </div>
         <ol>
           <li>
-            <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">Space Selfie / CrunchLabs</a>
-            — portal de envio e entrega das selfies.
+            <a href="https://www.spaceselfie.com/" target="_blank" rel="noopener noreferrer">Space Selfie / CrunchLabs</a>:
+            portal de envio e entrega das selfies.
           </li>
           <li>
-            <a href="https://tyvak.eu/missions/satgus/" target="_blank" rel="noopener noreferrer">Tyvak International — missão SAT GUS</a>
-            — CubeSat 12U, ~500&nbsp;km, órbita ~90&nbsp;min, parceria Mark Rober / CrunchLabs.
+            <a href="https://tyvak.eu/missions/satgus/" target="_blank" rel="noopener noreferrer">Tyvak International · missão SAT GUS</a>:
+            CubeSat 12U, ~500&nbsp;km, órbita ~90&nbsp;min, parceria Mark Rober / CrunchLabs.
           </li>
           <li>
-            <a href="https://rdw.com/newsroom/redwire-partners-with-youtuber-mark-rober-and-crunchlabs-to-enable-a-unique-selfie-taking-satellite-for-steam-outreach/" target="_blank" rel="noopener noreferrer">Redwire</a>
-            — câmera de voo e captura HDR do display com a Terra ao fundo.
+            <a href="https://rdw.com/newsroom/redwire-partners-with-youtuber-mark-rober-and-crunchlabs-to-enable-a-unique-selfie-taking-satellite-for-steam-outreach/" target="_blank" rel="noopener noreferrer">Redwire</a>:
+            câmera de voo e captura HDR do display com a Terra ao fundo.
           </li>
           <li>
-            <a href="https://www.youtube.com/watch?v=qr1AvisQcV8" target="_blank" rel="noopener noreferrer">Mark Rober — “I Spent $5,000,000 So You Can Go To Space For FREE”</a>
-            — vídeo oficial da missão.
+            <a href="https://www.youtube.com/watch?v=qr1AvisQcV8" target="_blank" rel="noopener noreferrer">Mark Rober · “I Spent $5,000,000 So You Can Go To Space For FREE”</a>:
+            vídeo oficial da missão.
           </li>
           <li>
-            <a href="https://www.n2yo.com/satellite/?s=62713" target="_blank" rel="noopener noreferrer">N2YO — SAT GUS (NORAD 62713)</a>
-            — rastreamento ao vivo: posição, altitude e próximas passagens.
+            <a href="https://www.n2yo.com/satellite/?s=62713" target="_blank" rel="noopener noreferrer">N2YO · SAT GUS (NORAD 62713)</a>:
+            rastreamento ao vivo (posição, altitude e próximas passagens).
           </li>
         </ol>
       </div>
@@ -1315,16 +1332,16 @@
   <footer>
     <div class="section-inner">
       <p>
-        <strong>Nossa Selfie no Espaço</strong> · apresentação pessoal da foto retornada pelo SAT&nbsp;GUS.
+        <strong>Space Selfie · SAT GUS</strong> · página pessoal sobre o projeto e o envio.
         Space Selfie, CrunchLabs, SAT GUS e marcas citadas pertencem aos respectivos donos.
       </p>
-      <p>Feito com a foto real da missão · 2025–2026</p>
+      <p>Missão real · 2025–2026</p>
     </div>
   </footer>
 
   <dialog class="lightbox" id="lightbox" aria-label="Selfie ampliada">
     <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Fechar">&times;</button>
-    <img src="assets/nossa-selfie-espacial.jpg" alt="Selfie espacial ampliada: casal no display do SAT GUS com a Terra ao fundo" width="2000" height="1500" />
+    <img src="assets/nossa-selfie-espacial.jpg" alt="Foto oficial ampliada do display do SAT GUS com a Terra ao fundo" width="2000" height="1500" />
     <p class="lightbox-hint">Esc ou clique fora para fechar</p>
   </dialog>
 
@@ -1337,6 +1354,7 @@
       function openLb() {
         if (typeof lightbox.showModal === "function") lightbox.showModal();
         else lightbox.setAttribute("open", "");
+        closeBtn.focus();
       }
       function closeLb() {
         if (typeof lightbox.close === "function") lightbox.close();
@@ -1357,8 +1375,13 @@
       lightbox.addEventListener("click", function (e) {
         if (e.target === lightbox) closeLb();
       });
+      lightbox.addEventListener("cancel", function (e) {
+        e.preventDefault();
+        closeLb();
+      });
       document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && lightbox.hasAttribute("open")) closeLb();
+        if (e.key !== "Escape") return;
+        if (lightbox.open || lightbox.hasAttribute("open")) closeLb();
       });
 
       /* Reveal on scroll */
