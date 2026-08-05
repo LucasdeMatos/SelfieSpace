@@ -1,0 +1,167 @@
+- generic [active] [ref=f1e1]:
+  - link "Pular para o conteúdo" [ref=f1e2] [cursor=pointer]:
+    - /url: "#conteudo"
+  - navigation "Navegação principal" [ref=f1e3]:
+    - link "Space Selfie · SAT GUS" [ref=f1e4] [cursor=pointer]:
+      - /url: "#topo"
+    - list [ref=f1e5]:
+      - listitem [ref=f1e6]:
+        - link "O projeto" [ref=f1e7] [cursor=pointer]:
+          - /url: "#projeto"
+      - listitem [ref=f1e8]:
+        - link "Como participar" [ref=f1e9] [cursor=pointer]:
+          - /url: "#participar"
+      - listitem [ref=f1e10]:
+        - link "O que eu fiz" [ref=f1e11] [cursor=pointer]:
+          - /url: "#envio"
+      - listitem [ref=f1e12]:
+        - link "Satélite ao vivo" [ref=f1e13] [cursor=pointer]:
+          - /url: "#ao-vivo"
+  - banner [ref=f1e14]:
+    - generic [ref=f1e18]:
+      - paragraph [ref=f1e19]: Missão · SAT GUS · LEO ~500 km
+      - heading "Eu enviei uma foto para o espaço" [level=1] [ref=f1e20]
+      - paragraph [ref=f1e21]: Um satélite real, um Google Pixel em órbita e uma fila de mais de um ano. Esta página conta o projeto, como participar e o que eu fiz.
+      - list [ref=f1e22]:
+        - listitem [ref=f1e23]:
+          - strong [ref=f1e24]: Missão
+          - text: Space Selfie · CrunchLabs
+        - listitem [ref=f1e25]:
+          - strong [ref=f1e26]: Satélite
+          - text: SAT GUS · NORAD 62713
+      - generic [ref=f1e27]:
+        - link "Começar pelo projeto" [ref=f1e28] [cursor=pointer]:
+          - /url: "#projeto"
+        - link "Como participar" [ref=f1e29] [cursor=pointer]:
+          - /url: "#participar"
+  - main [ref=f1e30]:
+    - region "1. O que é o projeto" [ref=f1e31]
+    - region "2. Como participar" [ref=f1e33]:
+      - generic [ref=f1e35]:
+        - list [ref=f1e36]:
+          - listitem [ref=f1e37]:
+            - generic [ref=f1e38]: "01"
+            - generic [ref=f1e39]:
+              - heading "Envie a foto no site" [level=3] [ref=f1e40]
+              - paragraph [ref=f1e41]:
+                - text: No portal
+                - link "SpaceSelfie.com" [ref=f1e42] [cursor=pointer]:
+                  - /url: https://www.spaceselfie.com/
+                - text: (CrunchLabs), você faz o upload da selfie. Em maio de 2025 o envio ficou aberto ao público.
+          - listitem [ref=f1e43]:
+            - generic [ref=f1e44]: "02"
+            - generic [ref=f1e45]:
+              - heading "Escolha onde a foto será tirada" [level=3] [ref=f1e46]
+              - paragraph [ref=f1e47]:
+                - text: Além da imagem, você indica a
+                - strong [ref=f1e48]: cidade / localização
+                - text: desejada. A ideia é o SAT GUS capturar a selfie quando estiver
+                - strong [ref=f1e49]: sobrevoando aquela região
+                - text: ": o “photobomb” da Terra por trás do display fica alinhado com o lugar pedido (Mark Rober falava em tirar a foto “over your city” / perto da sua casa)."
+              - paragraph [ref=f1e50]:
+                - strong [ref=f1e51]: "Importante:"
+                - text: o satélite
+                - strong [ref=f1e52]: não fotografa você no chão
+                - text: . A selfie fica na tela do Pixel; a câmera espacial fotografa esse display com o planeta ao fundo. A cidade define
+                - strong [ref=f1e53]: sobre qual pedaço da Terra
+                - text: o clique deve acontecer, não a garantia de “minha casa no centro do quadro”.
+          - listitem [ref=f1e54]:
+            - generic [ref=f1e55]: "03"
+            - generic [ref=f1e56]:
+              - heading "A foto sobe para o SAT GUS" [level=3] [ref=f1e57]
+              - paragraph [ref=f1e58]: A imagem e a preferência de localização são transmitidas ao satélite em LEO (~500 km).
+          - listitem [ref=f1e59]:
+            - generic [ref=f1e60]: "04"
+            - generic [ref=f1e61]:
+              - heading "O Pixel exibe a selfie em órbita" [level=3] [ref=f1e62]
+              - paragraph [ref=f1e63]:
+                - text: Um
+                - strong [ref=f1e64]: Google Pixel
+                - text: comercial, montado no módulo de display do satélite, mostra a foto na tela, no espaço.
+          - listitem [ref=f1e65]:
+            - generic [ref=f1e66]: "05"
+            - generic [ref=f1e67]:
+              - heading "A câmera espacial dispara" [level=3] [ref=f1e68]
+              - paragraph [ref=f1e69]:
+                - text: Quando a órbita passa pela área pedida, a câmera Redwire fotografa o display
+                - emphasis [ref=f1e70]: com a Terra curva e o limbo atmosférico azul no fundo
+                - text: .
+          - listitem [ref=f1e71]:
+            - generic [ref=f1e72]: "06"
+            - generic [ref=f1e73]:
+              - heading "O arquivo volta por e-mail" [level=3] [ref=f1e74]
+              - paragraph [ref=f1e75]:
+                - text: A imagem desce pelos sistemas de solo e chega por e-mail, com marca d’água oficial CrunchLabs / SpaceSelfie e a legenda “Displayed on Google Pixel”. A espera costuma ser da ordem de
+                - strong [ref=f1e76]: 1 a 2 anos
+                - text: (quase toda na fila).
+        - 'figure "Referência de LEO: curva da Terra e atmosfera azul, o tipo de “limbo” que aparece atrás do display nas fotos oficiais" [ref=f1e77]':
+          - img "Curvatura da Terra e atmosfera azul vistas do espaço, com estrutura de espaçonave à direita" [ref=f1e78]
+    - region "3. O que eu fiz" [ref=f1e80]:
+      - generic [ref=f1e81]:
+        - generic [ref=f1e82]:
+          - article [ref=f1e83]:
+            - generic [ref=f1e84]: Mai 2025
+            - generic [ref=f1e85]:
+              - heading "Site aberto ao público" [level=3] [ref=f1e86]
+              - paragraph [ref=f1e87]: SpaceSelfie.com libera envio gratuito de fotos para a fila do satélite.
+          - article [ref=f1e88]:
+            - generic [ref=f1e89]: +2 dias
+            - generic [ref=f1e90]:
+              - heading "Eu enviei a foto" [level=3] [ref=f1e91]
+              - paragraph [ref=f1e92]: Dois dias após a abertura, a imagem entrou na fila do SAT GUS.
+          - article [ref=f1e93]:
+            - generic [ref=f1e94]: Fila
+            - generic [ref=f1e95]:
+              - heading "~1 ano e 2 meses" [level=3] [ref=f1e96]
+              - paragraph [ref=f1e97]: A maior parte do tempo é a fila para exibir no Pixel e fotografar em órbita.
+          - article [ref=f1e98]:
+            - generic [ref=f1e99]: 27 jul 2026
+            - generic [ref=f1e100]:
+              - heading "O e-mail chegou" [level=3] [ref=f1e101]
+              - paragraph [ref=f1e102]:
+                - text: "Arquivo oficial CrunchLabs / SpaceSelfie na caixa de entrada. Do upload ao e-mail: ~"
+                - strong [ref=f1e103]: 14 meses (~425 dias)
+                - text: .
+        - figure [ref=f1e107]:
+          - button "Ampliar a foto que voltou do satélite" [ref=f1e108]
+    - region "Onde está o satélite agora?" [ref=f1e109]:
+      - iframe [ref=f1e112]:
+        
+    - region [ref=f1e114]:
+      - generic [ref=f1e115]:
+        - generic [ref=f1e116]:
+          - heading "Fontes e referências" [level=2] [ref=f1e117]
+          - paragraph [ref=f1e118]: Para conferir fatos, parceiros e o funcionamento do satélite.
+        - list [ref=f1e119]:
+          - listitem [ref=f1e120]:
+            - link "Space Selfie / CrunchLabs" [ref=f1e121] [cursor=pointer]:
+              - /url: https://www.spaceselfie.com/
+            - text: ": portal de envio e entrega das selfies."
+          - listitem [ref=f1e122]:
+            - link "Tyvak International · missão SAT GUS" [ref=f1e123] [cursor=pointer]:
+              - /url: https://tyvak.eu/missions/satgus/
+            - text: ": CubeSat 12U, ~500 km, órbita ~90 min, parceria Mark Rober / CrunchLabs."
+          - listitem [ref=f1e124]:
+            - link "Redwire" [ref=f1e125] [cursor=pointer]:
+              - /url: https://rdw.com/newsroom/redwire-partners-with-youtuber-mark-rober-and-crunchlabs-to-enable-a-unique-selfie-taking-satellite-for-steam-outreach/
+            - text: ": câmera de voo e captura HDR do display com a Terra ao fundo."
+          - listitem [ref=f1e126]:
+            - link "Mark Rober · “I Spent $5,000,000 So You Can Go To Space For FREE”" [ref=f1e127] [cursor=pointer]:
+              - /url: https://www.youtube.com/watch?v=qr1AvisQcV8
+            - text: ": vídeo oficial da missão."
+          - listitem [ref=f1e128]:
+            - link "N2YO · SAT GUS (NORAD 62713)" [ref=f1e129] [cursor=pointer]:
+              - /url: https://www.n2yo.com/satellite/?s=62713
+            - text: ": rastreamento ao vivo (posição, altitude e próximas passagens)."
+  - contentinfo [ref=f1e130]:
+    - generic [ref=f1e131]:
+      - paragraph [ref=f1e132]:
+        - strong [ref=f1e133]: Space Selfie · SAT GUS
+        - text: "· página pessoal sobre o projeto e o envio. Space Selfie, CrunchLabs, SAT GUS e marcas citadas pertencem aos respectivos donos. Vídeos de fundo: NASA (domínio público) ·"
+        - link "EPIC" [ref=f1e134] [cursor=pointer]:
+          - /url: https://svs.gsfc.nasa.gov/12312
+        - text: /
+        - link "Earth Views" [ref=f1e135] [cursor=pointer]:
+          - /url: https://svs.gsfc.nasa.gov/10766
+        - text: .
+      - paragraph [ref=f1e136]: Missão real · 2025–2026
