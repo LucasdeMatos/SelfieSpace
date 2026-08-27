@@ -3482,7 +3482,7 @@
         goldRimLight.position.set(-8, 10, -10);
         scene.add(goldRimLight);
 
-        /* Procedural Vivid Earth Map Generator */
+        /* Procedural Vivid Earth Map Generator (Azul e Verde Vibrante) */
         function createVividEarthTexture() {
           var cv = document.createElement("canvas");
           cv.width = 1024;
@@ -3491,16 +3491,16 @@
 
           /* 1. Deep Ocean & Coastal Shelves */
           var oceanGrad = ctx.createLinearGradient(0, 0, 0, 512);
-          oceanGrad.addColorStop(0, "#082a52"); // Arctic
+          oceanGrad.addColorStop(0, "#082a52");
           oceanGrad.addColorStop(0.2, "#0d5cb6");
-          oceanGrad.addColorStop(0.5, "#1565c0"); // Tropical Ocean
+          oceanGrad.addColorStop(0.5, "#1565c0"); // Blue Ocean
           oceanGrad.addColorStop(0.8, "#0d5cb6");
-          oceanGrad.addColorStop(1, "#082a52"); // Antarctic
+          oceanGrad.addColorStop(1, "#082a52");
           ctx.fillStyle = oceanGrad;
           ctx.fillRect(0, 0, 1024, 512);
 
           /* Coastal Turquoise Shimmers */
-          ctx.fillStyle = "rgba(0, 229, 255, 0.25)";
+          ctx.fillStyle = "rgba(0, 229, 255, 0.35)";
           var coasts = [
             [320, 300, 120, 160], [230, 140, 160, 110], [540, 120, 140, 90],
             [680, 130, 200, 110], [520, 280, 120, 150], [860, 260, 120, 110], [880, 370, 95, 75]
@@ -3511,7 +3511,7 @@
             ctx.fill();
           });
 
-          /* 2. Continents (Vivid Greens, Forests & Golden Deserts) */
+          /* 2. Continents (Vivid Emerald Greens, Rainforests & Golden Deserts) */
           function drawLand(cx, cy, rx, ry, colorCore, colorBorder) {
             ctx.save();
             ctx.beginPath();
@@ -3538,15 +3538,15 @@
           drawLand(680, 130, 160, 85, "#558b2f", "#2e7d32");
 
           /* Africa (Sahara Desert + Congo Jungle) */
-          drawLand(520, 250, 85, 60, "#fbc02d", "#c0ca33"); // Sahara
-          drawLand(540, 320, 70, 90, "#2e7d32", "#1b5e20"); // Congo
+          drawLand(520, 250, 85, 60, "#fbc02d", "#c0ca33");
+          drawLand(540, 320, 70, 90, "#2e7d32", "#1b5e20");
 
           /* Asia & India */
-          drawLand(730, 200, 75, 65, "#d4e157", "#827717"); // Middle East
-          drawLand(760, 240, 48, 58, "#388e3c", "#1b5e20"); // India
-          drawLand(860, 260, 85, 85, "#2e7d32", "#1b5e20"); // SE Asia
+          drawLand(730, 200, 75, 65, "#d4e157", "#827717");
+          drawLand(760, 240, 48, 58, "#388e3c", "#1b5e20");
+          drawLand(860, 260, 85, 85, "#2e7d32", "#1b5e20");
 
-          /* Australia (Red/Golden Outback + Coastal Green) */
+          /* Australia */
           drawLand(880, 370, 70, 50, "#e65100", "#f57f17");
 
           /* 3. Polar Ice Caps (Pure White) */
@@ -3558,82 +3558,60 @@
           ctx.ellipse(512, 497, 512, 38, 0, 0, Math.PI * 2);
           ctx.fill();
 
-          var tex = new THREE.CanvasTexture(cv);
-          return tex;
-        }
-
-        /* Procedural 3D Cloud Texture Generator */
-        function createCloudLayerTexture() {
-          var cv = document.createElement("canvas");
-          cv.width = 1024;
-          cv.height = 512;
-          var ctx = cv.getContext("2d");
-          ctx.fillStyle = "rgba(0,0,0,0)";
-          ctx.fillRect(0, 0, 1024, 512);
-
-          ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
-          for (var i = 0; i < 110; i++) {
-            var x = Math.random() * 1024;
-            var y = 50 + Math.random() * 412;
-            var rx = 35 + Math.random() * 110;
-            var ry = 12 + Math.random() * 32;
+          /* 4. Soft Wispy Cloud Bands (Suaves e naturais) */
+          ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+          var cloudBands = [
+            [512, 110, 480, 22],
+            [512, 230, 450, 18],
+            [512, 360, 470, 20]
+          ];
+          cloudBands.forEach(function(b) {
             ctx.beginPath();
-            ctx.ellipse(x, y, rx, ry, Math.random() * Math.PI, 0, Math.PI * 2);
+            ctx.ellipse(b[0], b[1], b[2], b[3], 0, 0, Math.PI * 2);
             ctx.fill();
-          }
+          });
 
           var tex = new THREE.CanvasTexture(cv);
           return tex;
         }
 
-        /* Texture Loader & Fallbacks */
-        var textureLoader = new THREE.TextureLoader();
-        var earthTexture = textureLoader.load("assets/earth-blue-marble.jpg", function(t) {
-          if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
-        }, undefined, function() {
-          earthTexture = createVividEarthTexture();
-        });
+        /* Texture Loader & Immediate Rendering */
+        var vividEarthTex = createVividEarthTexture();
 
+        var textureLoader = new THREE.TextureLoader();
         var selfieTexture = textureLoader.load("assets/nossa-selfie-espacial.jpg");
         if (THREE.SRGBColorSpace) selfieTexture.colorSpace = THREE.SRGBColorSpace;
 
         var solarTexture = createSolarGridTexture();
         var bodyBumpTexture = createSatBodyBumpTexture();
-        var cloudTexture = createCloudLayerTexture();
-        var vividEarthFallback = createVividEarthTexture();
 
         /* Earth Group Sphere Assembly */
         var earthGroup = new THREE.Group();
         scene.add(earthGroup);
 
-        /* Main Earth Body (Vivid Colors + Specular Oceans) */
+        /* Main Earth Body (Azul e Verde Vibrantes) */
         var earthGeo = new THREE.SphereGeometry(4.2, 64, 64);
         var earthMat = new THREE.MeshStandardMaterial({
-          map: earthTexture || vividEarthFallback,
-          color: 0x44aaff, // Vibrant Blue base tint boost
-          roughness: 0.45,
-          metalness: 0.18
+          map: vividEarthTex,
+          roughness: 0.4,
+          metalness: 0.1
         });
         var earthMesh = new THREE.Mesh(earthGeo, earthMat);
         earthGroup.add(earthMesh);
 
-        /* 3D Atmospheric Clouds Sphere (Rotates independently) */
-        var cloudGeo = new THREE.SphereGeometry(4.25, 48, 48);
-        var cloudMat = new THREE.MeshStandardMaterial({
-          map: cloudTexture,
-          transparent: true,
-          opacity: 0.55,
-          blending: THREE.AdditiveBlending
-        });
-        var cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
-        earthGroup.add(cloudMesh);
+        /* Tentar carregar a textura da NASA em segundo plano se disponível */
+        textureLoader.load("assets/earth-blue-marble.jpg", function (t) {
+          if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
+          earthMat.map = t;
+          earthMat.needsUpdate = true;
+        }, undefined, function () {});
 
         /* Atmosphere Outer Glow Shell */
-        var atmosGeo = new THREE.SphereGeometry(4.42, 48, 48);
+        var atmosGeo = new THREE.SphereGeometry(4.4, 48, 48);
         var atmosMat = new THREE.MeshBasicMaterial({
           color: 0x00bfff,
           transparent: true,
-          opacity: 0.28,
+          opacity: 0.25,
           side: THREE.BackSide
         });
         var atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
@@ -3803,9 +3781,8 @@
           requestAnimationFrame(animate);
           var elapsed = clock.getElapsedTime();
 
-          /* Gentle Earth & Cloud self-rotations */
+          /* Gentle Earth self-rotation */
           earthMesh.rotation.y = elapsed * 0.05;
-          if (cloudMesh) cloudMesh.rotation.y = elapsed * 0.07;
 
           /* Mouse lerp */
           mouseCurrX += (mouseTargetX - mouseCurrX) * 0.05;
