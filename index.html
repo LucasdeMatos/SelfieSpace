@@ -3398,25 +3398,100 @@
           renderer.toneMappingExposure = 1.25;
         }
 
-        /* Lights */
-        var ambientLight = new THREE.AmbientLight(0xddeeff, 0.85);
+        /* Procedural Textures Generator for Photorealistic Materials */
+        function createSolarGridTexture() {
+          var cv = document.createElement("canvas");
+          cv.width = 512;
+          cv.height = 512;
+          var ctx = cv.getContext("2d");
+          ctx.fillStyle = "#091728";
+          ctx.fillRect(0, 0, 512, 512);
+
+          var cols = 4;
+          var rows = 3;
+          var w = 512 / cols;
+          var h = 512 / rows;
+
+          for (var r = 0; r < rows; r++) {
+            for (var c = 0; c < cols; c++) {
+              ctx.fillStyle = "#0c2848";
+              ctx.fillRect(c * w + 5, r * h + 5, w - 10, h - 10);
+
+              var grad = ctx.createLinearGradient(c * w, r * h, (c + 1) * w, (r + 1) * h);
+              grad.addColorStop(0, "rgba(40, 120, 220, 0.45)");
+              grad.addColorStop(0.5, "rgba(10, 35, 70, 0.15)");
+              grad.addColorStop(1, "rgba(80, 160, 255, 0.35)");
+              ctx.fillStyle = grad;
+              ctx.fillRect(c * w + 7, r * h + 7, w - 14, h - 14);
+
+              /* Gold Busbar Lines */
+              ctx.fillStyle = "#d4af37";
+              ctx.fillRect(c * w + w / 2 - 2, r * h + 5, 4, h - 10);
+            }
+          }
+          var tex = new THREE.CanvasTexture(cv);
+          tex.wrapS = THREE.RepeatWrapping;
+          tex.wrapT = THREE.RepeatWrapping;
+          return tex;
+        }
+
+        function createSatBodyBumpTexture() {
+          var cv = document.createElement("canvas");
+          cv.width = 512;
+          cv.height = 512;
+          var ctx = cv.getContext("2d");
+          ctx.fillStyle = "#808080";
+          ctx.fillRect(0, 0, 512, 512);
+
+          ctx.strokeStyle = "#303030";
+          ctx.lineWidth = 6;
+          ctx.strokeRect(12, 12, 488, 488);
+          ctx.strokeRect(30, 80, 452, 352);
+
+          /* Rivets & Screw heads */
+          ctx.fillStyle = "#ffffff";
+          var rivets = [
+            [25, 25], [487, 25], [25, 487], [487, 487],
+            [256, 25], [256, 487], [25, 256], [487, 256]
+          ];
+          rivets.forEach(function(pt) {
+            ctx.beginPath();
+            ctx.arc(pt[0], pt[1], 6, 0, Math.PI * 2);
+            ctx.fill();
+          });
+          var tex = new THREE.CanvasTexture(cv);
+          return tex;
+        }
+
+        /* Enhanced Space & Studio Lighting */
+        var ambientLight = new THREE.AmbientLight(0x7090b0, 0.7);
         scene.add(ambientLight);
 
-        var sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
-        sunLight.position.set(12, 10, 8);
+        /* Main Sunlight (Bright Key Light) */
+        var sunLight = new THREE.DirectionalLight(0xfffaed, 3.2);
+        sunLight.position.set(14, 12, 9);
         scene.add(sunLight);
 
-        var blueRimLight = new THREE.DirectionalLight(0x40a0ff, 1.8);
-        blueRimLight.position.set(-10, -5, -6);
-        scene.add(blueRimLight);
+        /* Earth Atmosphere Bounce Light (Cool Cyan Fill) */
+        var earthBounceLight = new THREE.DirectionalLight(0x00d8ff, 1.9);
+        earthBounceLight.position.set(-12, -8, -5);
+        scene.add(earthBounceLight);
 
-        /* Texture Loader */
+        /* Gold Rim Light (Warm Rear Contour Highlight) */
+        var goldRimLight = new THREE.DirectionalLight(0xffaa22, 2.4);
+        goldRimLight.position.set(-8, 10, -10);
+        scene.add(goldRimLight);
+
+        /* Texture Loader & Procedurals */
         var textureLoader = new THREE.TextureLoader();
         var earthTexture = textureLoader.load("assets/earth-from-space.jpg");
         if (THREE.SRGBColorSpace) earthTexture.colorSpace = THREE.SRGBColorSpace;
 
         var selfieTexture = textureLoader.load("assets/nossa-selfie-espacial.jpg");
         if (THREE.SRGBColorSpace) selfieTexture.colorSpace = THREE.SRGBColorSpace;
+
+        var solarTexture = createSolarGridTexture();
+        var bodyBumpTexture = createSatBodyBumpTexture();
 
         /* Earth Sphere */
         var earthGroup = new THREE.Group();
@@ -3425,18 +3500,18 @@
         var earthGeo = new THREE.SphereGeometry(4.2, 64, 64);
         var earthMat = new THREE.MeshStandardMaterial({
           map: earthTexture,
-          roughness: 0.7,
-          metalness: 0.1
+          roughness: 0.55,
+          metalness: 0.15
         });
         var earthMesh = new THREE.Mesh(earthGeo, earthMat);
         earthGroup.add(earthMesh);
 
-        /* Atmosphere Glow Ring */
+        /* Atmosphere Glow Shell */
         var atmosGeo = new THREE.SphereGeometry(4.38, 48, 48);
         var atmosMat = new THREE.MeshBasicMaterial({
-          color: 0x4da6ff,
+          color: 0x38b0ff,
           transparent: true,
-          opacity: 0.18,
+          opacity: 0.22,
           side: THREE.BackSide
         });
         var atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
@@ -3447,7 +3522,7 @@
         var orbitRingMat = new THREE.MeshBasicMaterial({
           color: 0x82f073,
           transparent: true,
-          opacity: 0.25,
+          opacity: 0.3,
           side: THREE.DoubleSide
         });
         var orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
@@ -3460,49 +3535,87 @@
         var satGroup = new THREE.Group();
         scene.add(satGroup);
 
-        /* Sat Main Body (12U CubeSat proportions) */
+        /* Sat Main Body (12U CubeSat titanium frame with Bump Map) */
         var bodyGeo = new THREE.BoxGeometry(1.4, 2.6, 1.4);
         var bodyMat = new THREE.MeshStandardMaterial({
-          color: 0x1e242d,
-          roughness: 0.3,
-          metalness: 0.85
+          color: 0x1a212b,
+          bumpMap: bodyBumpTexture,
+          bumpScale: 0.03,
+          roughness: 0.22,
+          metalness: 0.88
         });
         var satBody = new THREE.Mesh(bodyGeo, bodyMat);
         satGroup.add(satBody);
 
-        /* Gold Foil Bezel Edges */
-        var edgeGeo = new THREE.BoxGeometry(1.42, 2.62, 0.05);
+        /* Gold Foil Bezel Edges (High Metal Gloss) */
+        var edgeGeo = new THREE.BoxGeometry(1.43, 2.63, 0.05);
         var edgeMat = new THREE.MeshStandardMaterial({
-          color: 0xd4af37,
-          roughness: 0.2,
-          metalness: 0.9
+          color: 0xffd700,
+          roughness: 0.12,
+          metalness: 0.95
         });
         var satBezel = new THREE.Mesh(edgeGeo, edgeMat);
         satBezel.position.z = 0.68;
         satGroup.add(satBezel);
 
-        /* Screen Display (Google Pixel displaying Selfie) */
+        /* Screen Display (Google Pixel with Emissive Glow) */
         var screenGeo = new THREE.PlaneGeometry(1.25, 2.25);
-        var screenMat = new THREE.MeshBasicMaterial({
-          map: selfieTexture
+        var screenMat = new THREE.MeshStandardMaterial({
+          map: selfieTexture,
+          emissive: 0xffffff,
+          emissiveMap: selfieTexture,
+          emissiveIntensity: 0.22,
+          roughness: 0.1,
+          metalness: 0.1
         });
         var screenMesh = new THREE.Mesh(screenGeo, screenMat);
         screenMesh.position.z = 0.72;
         satGroup.add(screenMesh);
 
-        /* Redwire Camera Lens Module (Top cylinder) */
-        var lensGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.4, 24);
-        var lensMat = new THREE.MeshStandardMaterial({
-          color: 0x111115,
+        /* Glass Screen Overlay Glare (Specular Glass Layer) */
+        var glassGeo = new THREE.PlaneGeometry(1.26, 2.26);
+        var glassMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: 0.04,
           metalness: 0.95,
-          roughness: 0.1
+          transparent: true,
+          opacity: 0.32
         });
-        var lensMesh = new THREE.Mesh(lensGeo, lensMat);
-        lensMesh.position.set(0, 1.45, 0.3);
-        lensMesh.rotation.x = Math.PI / 4;
-        satGroup.add(lensMesh);
+        var glassMesh = new THREE.Mesh(glassGeo, glassMat);
+        glassMesh.position.z = 0.735;
+        satGroup.add(glassMesh);
 
-        /* Solar Panels (Left & Right Wings) */
+        /* Screen Soft Point Light Glow */
+        var screenPointLight = new THREE.PointLight(0x60b0ff, 1.2, 5);
+        screenPointLight.position.set(0, 0, 1.1);
+        satGroup.add(screenPointLight);
+
+        /* Redwire Camera Module (Multi-part Lens Assembly) */
+        var lensHousingGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.42, 32);
+        var lensHousingMat = new THREE.MeshStandardMaterial({
+          color: 0x0f1217,
+          metalness: 0.95,
+          roughness: 0.12
+        });
+        var lensHousing = new THREE.Mesh(lensHousingGeo, lensHousingMat);
+        lensHousing.position.set(0, 1.45, 0.3);
+        lensHousing.rotation.x = Math.PI / 4;
+        satGroup.add(lensHousing);
+
+        var lensGlassGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.44, 32);
+        var lensGlassMat = new THREE.MeshStandardMaterial({
+          color: 0x1050a0,
+          roughness: 0.02,
+          metalness: 0.98,
+          emissive: 0x003366,
+          emissiveIntensity: 0.3
+        });
+        var lensGlass = new THREE.Mesh(lensGlassGeo, lensGlassMat);
+        lensGlass.position.set(0, 1.45, 0.3);
+        lensGlass.rotation.x = Math.PI / 4;
+        satGroup.add(lensGlass);
+
+        /* Solar Panels (Left & Right Wings with Solar Grid Texture) */
         var panelGroupLeft = new THREE.Group();
         var panelGroupRight = new THREE.Group();
         satGroup.add(panelGroupLeft);
@@ -3510,9 +3623,9 @@
 
         var panelGeo = new THREE.BoxGeometry(2.8, 2.0, 0.04);
         var panelMat = new THREE.MeshStandardMaterial({
-          color: 0x0f2b48,
-          roughness: 0.25,
-          metalness: 0.8
+          map: solarTexture,
+          roughness: 0.16,
+          metalness: 0.85
         });
 
         var panelLeft = new THREE.Mesh(panelGeo, panelMat);
@@ -3530,20 +3643,20 @@
         satGroup.rotation.set(0.4, -0.6, 0.2);
 
         /* Space Starfield Particles */
-        var particleCount = 450;
+        var particleCount = 550;
         var particleGeo = new THREE.BufferGeometry();
         var particlePos = new Float32Array(particleCount * 3);
         for (var i = 0; i < particleCount * 3; i += 3) {
-          particlePos[i] = (Math.random() - 0.5) * 45;
-          particlePos[i + 1] = (Math.random() - 0.5) * 45;
-          particlePos[i + 2] = (Math.random() - 0.5) * 45;
+          particlePos[i] = (Math.random() - 0.5) * 50;
+          particlePos[i + 1] = (Math.random() - 0.5) * 50;
+          particlePos[i + 2] = (Math.random() - 0.5) * 50;
         }
         particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePos, 3));
         var particleMat = new THREE.PointsMaterial({
-          color: 0x90c4ff,
-          size: 0.12,
+          color: 0xa0d2ff,
+          size: 0.14,
           transparent: true,
-          opacity: 0.65
+          opacity: 0.7
         });
         var starParticles = new THREE.Points(particleGeo, particleMat);
         scene.add(starParticles);
