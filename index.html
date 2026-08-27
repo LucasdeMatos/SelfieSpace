@@ -1460,6 +1460,164 @@
         cursor: auto !important;
       }
     }
+
+    /* ——— 3D Interactive Section ——— */
+    .sec-3d {
+      position: relative;
+      height: 280vh;
+      background: oklch(0.06 0.005 230);
+    }
+    .sec-3d-pin {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #canvas-3d-sat {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      touch-action: none;
+    }
+    .sec-3d-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(5rem, 7vh, 6.5rem) var(--pad) clamp(2rem, 4vh, 3rem);
+    }
+    .sec-3d-header {
+      max-width: 34rem;
+      pointer-events: auto;
+    }
+    .sec-3d-header h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+      margin: 0.2rem 0 0.5rem;
+      color: var(--ink);
+      text-shadow: 0 4px 20px oklch(0 0 0 / 0.8);
+    }
+    .sec-3d-hint {
+      color: var(--primary);
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      letter-spacing: 0.02em;
+    }
+    .sec-3d-hint::before {
+      content: "↓";
+      display: inline-block;
+      animation: bounce-hint 1.5s infinite;
+    }
+    @keyframes bounce-hint {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(4px); }
+    }
+    .sec-3d-cards {
+      position: relative;
+      width: 100%;
+      max-width: 25rem;
+      height: 160px;
+      margin: auto 0;
+      align-self: flex-start;
+      pointer-events: auto;
+    }
+    .sec-3d-card {
+      position: absolute;
+      inset: 0;
+      background: oklch(0.12 0.015 230 / 0.85);
+      border: 1px solid oklch(0.82 0.15 113 / 0.35);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 1.35rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 15px 40px oklch(0 0 0 / 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.96);
+      transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out), visibility 0.45s;
+    }
+    .sec-3d-card.is-active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .card-tag {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--primary);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+    .sec-3d-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      margin: 0 0 0.4rem;
+      color: var(--ink);
+    }
+    .sec-3d-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.45;
+    }
+    .sec-3d-hud {
+      display: flex;
+      gap: 1.5rem;
+      background: oklch(0.1 0.01 230 / 0.75);
+      padding: 0.65rem 1.25rem;
+      border-radius: 999px;
+      border: 1px solid oklch(0.82 0.15 113 / 0.25);
+      align-self: flex-end;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px oklch(0 0 0 / 0.4);
+    }
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .hud-label {
+      font-size: 0.58rem;
+      font-family: var(--font-display);
+      color: var(--faint);
+      letter-spacing: 0.06em;
+    }
+    .hud-val {
+      font-size: 0.8rem;
+      font-family: var(--font-display);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    @media (max-width: 767px) {
+      .sec-3d { height: 240vh; }
+      .sec-3d-cards {
+        max-width: 100%;
+        margin-top: auto;
+        height: auto;
+        min-height: 140px;
+      }
+      .sec-3d-card {
+        position: relative;
+        inset: auto;
+        transform: none;
+      }
+      .sec-3d-hud { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -1488,6 +1646,7 @@
     <a class="brand" href="#topo">Space Selfie <span>· SAT GUS</span></a>
     <ul class="nav-links">
       <li><a href="#projeto" data-nav>O projeto</a></li>
+      <li><a href="#modelo-3d" data-nav>Modelo 3D</a></li>
       <li><a href="#participar" data-nav>Como participar</a></li>
       <li><a href="#envio" data-nav>O que eu fiz</a></li>
       <li><a href="#ao-vivo" data-nav>Satélite ao vivo</a></li>
@@ -1656,11 +1815,49 @@
         </div>
 
         <p class="reveal section-bridge">
-          <a class="btn btn-ghost btn-magnetic" href="#participar" data-cursor="→">
+          <a class="btn btn-ghost btn-magnetic" href="#modelo-3d" data-cursor="→">
             <span class="btn-fill" aria-hidden="true"></span>
-            <span class="btn-label">Próximo: como participar →</span>
+            <span class="btn-label">Próximo: ver em 3D →</span>
           </a>
         </p>
+      </div>
+    </section>
+
+    <!-- EXPLORAÇÃO 3D INTERATIVA (SCROLL-CONTROLLED) -->
+    <section class="sec-3d" id="modelo-3d" aria-labelledby="modelo-3d-title">
+      <div class="sec-3d-pin">
+        <canvas id="canvas-3d-sat"></canvas>
+        <div class="sec-3d-overlay">
+          <div class="sec-3d-header reveal">
+            <p class="section-kicker">3D Interativo · Órbita & Hardware</p>
+            <h2 id="modelo-3d-title">Explore o SAT GUS em 3D</h2>
+            <p class="sec-3d-hint">Role para baixo para interagir com o modelo e aproximar da selfie em órbita</p>
+          </div>
+
+          <div class="sec-3d-cards">
+            <div class="sec-3d-card is-active" data-step="1">
+              <span class="card-tag">Fase 01 · Órbita Baixa (LEO)</span>
+              <h3>Terra a ~500 km</h3>
+              <p>O SAT GUS viaja a 7,6 km/s completando uma volta inteira no planeta a cada 90 minutos.</p>
+            </div>
+            <div class="sec-3d-card" data-step="2">
+              <span class="card-tag">Fase 02 · CubeSat 12U</span>
+              <h3>Painéis & Display Pixel</h3>
+              <p>Hardware espacial da Tyvak com a tela do Google Pixel exibindo a selfie enviada da Terra.</p>
+            </div>
+            <div class="sec-3d-card" data-step="3">
+              <span class="card-tag">Fase 03 · Zoom de Alta Precisão</span>
+              <h3>Nossa Selfie no Espaço</h3>
+              <p>A foto real de Lucas + namorada capturada em órbita com o limbo azul da Terra ao fundo.</p>
+            </div>
+          </div>
+
+          <div class="sec-3d-hud" aria-hidden="true">
+            <div class="hud-item"><span class="hud-label">ALTITUDE</span><span class="hud-val">502.4 km</span></div>
+            <div class="hud-item"><span class="hud-label">VELOCIDADE</span><span class="hud-val">7.66 km/s</span></div>
+            <div class="hud-item"><span class="hud-label">SATÉLITE</span><span class="hud-val">SAT GUS (NORAD 62713)</span></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2057,6 +2254,7 @@
     <p class="lightbox-hint">Esc ou clique fora para fechar</p>
   </dialog>
 
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
@@ -2483,7 +2681,7 @@
       function initNavChrome() {
         if (!nav || !hasGsap) return;
         var lastY = 0;
-        var sections = ["#projeto", "#participar", "#envio", "#ao-vivo"]
+        var sections = ["#projeto", "#modelo-3d", "#participar", "#envio", "#ao-vivo"]
           .map(function (id) { return document.querySelector(id); })
           .filter(Boolean);
         var links = Array.prototype.slice.call(document.querySelectorAll("[data-nav]"));
@@ -3069,12 +3267,319 @@
         storyReady = true;
       }
 
+      /* ——— 3D Interactive Scroll Experience ——— */
+      function init3DScrollExperience() {
+        if (reduce || typeof THREE === "undefined" || !hasGsap) return;
+        var canvas = document.getElementById("canvas-3d-sat");
+        var secContainer = document.getElementById("modelo-3d");
+        if (!canvas || !secContainer) return;
+
+        var scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x06070a, 0.018);
+
+        var camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          100
+        );
+        camera.position.set(0, 0, 14);
+
+        var renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance"
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        if (THREE.ACESFilmicToneMapping) {
+          renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          renderer.toneMappingExposure = 1.25;
+        }
+
+        /* Lights */
+        var ambientLight = new THREE.AmbientLight(0xddeeff, 0.85);
+        scene.add(ambientLight);
+
+        var sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
+        sunLight.position.set(12, 10, 8);
+        scene.add(sunLight);
+
+        var blueRimLight = new THREE.DirectionalLight(0x40a0ff, 1.8);
+        blueRimLight.position.set(-10, -5, -6);
+        scene.add(blueRimLight);
+
+        /* Texture Loader */
+        var textureLoader = new THREE.TextureLoader();
+        var earthTexture = textureLoader.load("assets/earth-from-space.jpg");
+        if (THREE.SRGBColorSpace) earthTexture.colorSpace = THREE.SRGBColorSpace;
+
+        var selfieTexture = textureLoader.load("assets/nossa-selfie-espacial.jpg");
+        if (THREE.SRGBColorSpace) selfieTexture.colorSpace = THREE.SRGBColorSpace;
+
+        /* Earth Sphere */
+        var earthGroup = new THREE.Group();
+        scene.add(earthGroup);
+
+        var earthGeo = new THREE.SphereGeometry(4.2, 64, 64);
+        var earthMat = new THREE.MeshStandardMaterial({
+          map: earthTexture,
+          roughness: 0.7,
+          metalness: 0.1
+        });
+        var earthMesh = new THREE.Mesh(earthGeo, earthMat);
+        earthGroup.add(earthMesh);
+
+        /* Atmosphere Glow Ring */
+        var atmosGeo = new THREE.SphereGeometry(4.38, 48, 48);
+        var atmosMat = new THREE.MeshBasicMaterial({
+          color: 0x4da6ff,
+          transparent: true,
+          opacity: 0.18,
+          side: THREE.BackSide
+        });
+        var atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
+        earthGroup.add(atmosMesh);
+
+        /* Orbit Ring */
+        var orbitRingGeo = new THREE.RingGeometry(6.2, 6.25, 96);
+        var orbitRingMat = new THREE.MeshBasicMaterial({
+          color: 0x82f073,
+          transparent: true,
+          opacity: 0.25,
+          side: THREE.DoubleSide
+        });
+        var orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
+        orbitRing.rotation.x = Math.PI / 2.2;
+        earthGroup.add(orbitRing);
+
+        earthGroup.position.set(-4.5, -2, -3);
+
+        /* 3D Satellite CubeSat (SAT GUS) */
+        var satGroup = new THREE.Group();
+        scene.add(satGroup);
+
+        /* Sat Main Body (12U CubeSat proportions) */
+        var bodyGeo = new THREE.BoxGeometry(1.4, 2.6, 1.4);
+        var bodyMat = new THREE.MeshStandardMaterial({
+          color: 0x1e242d,
+          roughness: 0.3,
+          metalness: 0.85
+        });
+        var satBody = new THREE.Mesh(bodyGeo, bodyMat);
+        satGroup.add(satBody);
+
+        /* Gold Foil Bezel Edges */
+        var edgeGeo = new THREE.BoxGeometry(1.42, 2.62, 0.05);
+        var edgeMat = new THREE.MeshStandardMaterial({
+          color: 0xd4af37,
+          roughness: 0.2,
+          metalness: 0.9
+        });
+        var satBezel = new THREE.Mesh(edgeGeo, edgeMat);
+        satBezel.position.z = 0.68;
+        satGroup.add(satBezel);
+
+        /* Screen Display (Google Pixel displaying Selfie) */
+        var screenGeo = new THREE.PlaneGeometry(1.25, 2.25);
+        var screenMat = new THREE.MeshBasicMaterial({
+          map: selfieTexture
+        });
+        var screenMesh = new THREE.Mesh(screenGeo, screenMat);
+        screenMesh.position.z = 0.72;
+        satGroup.add(screenMesh);
+
+        /* Redwire Camera Lens Module (Top cylinder) */
+        var lensGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.4, 24);
+        var lensMat = new THREE.MeshStandardMaterial({
+          color: 0x111115,
+          metalness: 0.95,
+          roughness: 0.1
+        });
+        var lensMesh = new THREE.Mesh(lensGeo, lensMat);
+        lensMesh.position.set(0, 1.45, 0.3);
+        lensMesh.rotation.x = Math.PI / 4;
+        satGroup.add(lensMesh);
+
+        /* Solar Panels (Left & Right Wings) */
+        var panelGroupLeft = new THREE.Group();
+        var panelGroupRight = new THREE.Group();
+        satGroup.add(panelGroupLeft);
+        satGroup.add(panelGroupRight);
+
+        var panelGeo = new THREE.BoxGeometry(2.8, 2.0, 0.04);
+        var panelMat = new THREE.MeshStandardMaterial({
+          color: 0x0f2b48,
+          roughness: 0.25,
+          metalness: 0.8
+        });
+
+        var panelLeft = new THREE.Mesh(panelGeo, panelMat);
+        panelLeft.position.set(-1.4, 0, 0);
+        panelGroupLeft.add(panelLeft);
+        panelGroupLeft.position.set(-0.7, 0, 0);
+
+        var panelRight = new THREE.Mesh(panelGeo, panelMat);
+        panelRight.position.set(1.4, 0, 0);
+        panelGroupRight.add(panelRight);
+        panelGroupRight.position.set(0.7, 0, 0);
+
+        /* Sat initial position */
+        satGroup.position.set(5, 3, -2);
+        satGroup.rotation.set(0.4, -0.6, 0.2);
+
+        /* Space Starfield Particles */
+        var particleCount = 450;
+        var particleGeo = new THREE.BufferGeometry();
+        var particlePos = new Float32Array(particleCount * 3);
+        for (var i = 0; i < particleCount * 3; i += 3) {
+          particlePos[i] = (Math.random() - 0.5) * 45;
+          particlePos[i + 1] = (Math.random() - 0.5) * 45;
+          particlePos[i + 2] = (Math.random() - 0.5) * 45;
+        }
+        particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePos, 3));
+        var particleMat = new THREE.PointsMaterial({
+          color: 0x90c4ff,
+          size: 0.12,
+          transparent: true,
+          opacity: 0.65
+        });
+        var starParticles = new THREE.Points(particleGeo, particleMat);
+        scene.add(starParticles);
+
+        /* Mouse Parallax */
+        var mouseTargetX = 0;
+        var mouseTargetY = 0;
+        var mouseCurrX = 0;
+        var mouseCurrY = 0;
+
+        if (finePointer) {
+          window.addEventListener("pointermove", function (e) {
+            mouseTargetX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseTargetY = (e.clientY / window.innerHeight - 0.5) * 2;
+          }, { passive: true });
+        }
+
+        /* Render Loop */
+        var clock = new THREE.Clock();
+
+        function animate() {
+          requestAnimationFrame(animate);
+          var elapsed = clock.getElapsedTime();
+
+          /* Gentle Earth self-rotation */
+          earthMesh.rotation.y = elapsed * 0.05;
+
+          /* Mouse lerp */
+          mouseCurrX += (mouseTargetX - mouseCurrX) * 0.05;
+          mouseCurrY += (mouseTargetY - mouseCurrY) * 0.05;
+
+          /* Subtle floating animation */
+          var floatOffsetY = Math.sin(elapsed * 1.5) * 0.08;
+
+          camera.position.x = mouseCurrX * 0.6;
+          camera.position.y = -mouseCurrY * 0.6;
+          camera.lookAt(0, 0, 0);
+
+          satGroup.position.y += (floatOffsetY - (satGroup.position.y - (satGroup.userData.baseY || 0))) * 0.05;
+
+          renderer.render(scene, camera);
+        }
+        animate();
+
+        /* Resize Handler */
+        function onResize() {
+          if (!renderer || !camera) return;
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener("resize", onResize, { passive: true });
+
+        /* GSAP ScrollTrigger Scrub Control */
+        var cards = Array.prototype.slice.call(secContainer.querySelectorAll(".sec-3d-card"));
+
+        function updateCards(stepIndex) {
+          cards.forEach(function (card, idx) {
+            card.classList.toggle("is-active", idx === stepIndex);
+          });
+        }
+
+        satGroup.userData.baseY = 0;
+
+        ScrollTrigger.create({
+          trigger: secContainer,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.6,
+          onUpdate: function (self) {
+            var p = self.progress;
+
+            if (p < 0.35) {
+              /* Phase 1: Satellite approaching LEO Earth */
+              var p1 = p / 0.35;
+              satGroup.position.x = gsap.utils.interpolate(5, 1.8, p1);
+              satGroup.position.y = gsap.utils.interpolate(3, 0.2, p1);
+              satGroup.position.z = gsap.utils.interpolate(-2, 3.5, p1);
+
+              satGroup.rotation.x = gsap.utils.interpolate(0.4, 0.15, p1);
+              satGroup.rotation.y = gsap.utils.interpolate(-0.6, -0.2, p1);
+              satGroup.rotation.z = gsap.utils.interpolate(0.2, -0.05, p1);
+
+              earthGroup.position.x = gsap.utils.interpolate(-4.5, -3.8, p1);
+              earthGroup.position.y = gsap.utils.interpolate(-2, -1.5, p1);
+
+              panelGroupLeft.rotation.y = gsap.utils.interpolate(Math.PI / 2.2, 0, p1);
+              panelGroupRight.rotation.y = gsap.utils.interpolate(-Math.PI / 2.2, 0, p1);
+
+              updateCards(0);
+            } else if (p < 0.70) {
+              /* Phase 2: Rotating to face the front display & Zooming */
+              var p2 = (p - 0.35) / 0.35;
+              satGroup.position.x = gsap.utils.interpolate(1.8, 0, p2);
+              satGroup.position.y = gsap.utils.interpolate(0.2, 0, p2);
+              satGroup.position.z = gsap.utils.interpolate(3.5, 7.8, p2);
+
+              satGroup.rotation.x = gsap.utils.interpolate(0.15, 0, p2);
+              satGroup.rotation.y = gsap.utils.interpolate(-0.2, 0, p2);
+              satGroup.rotation.z = gsap.utils.interpolate(-0.05, 0, p2);
+
+              earthGroup.position.x = gsap.utils.interpolate(-3.8, -1.2, p2);
+              earthGroup.position.y = gsap.utils.interpolate(-1.5, -3.2, p2);
+
+              panelGroupLeft.rotation.y = 0;
+              panelGroupRight.rotation.y = 0;
+
+              updateCards(1);
+            } else {
+              /* Phase 3: Detailed view of Selfie Photo on SAT GUS Screen */
+              var p3 = (p - 0.70) / 0.30;
+              satGroup.position.x = gsap.utils.interpolate(0, -0.3, p3);
+              satGroup.position.y = gsap.utils.interpolate(0, -0.15, p3);
+              satGroup.position.z = gsap.utils.interpolate(7.8, 9.8, p3);
+
+              satGroup.rotation.x = gsap.utils.interpolate(0, -0.1, p3);
+              satGroup.rotation.y = gsap.utils.interpolate(0, 0.35, p3);
+              satGroup.rotation.z = gsap.utils.interpolate(0, -0.05, p3);
+
+              earthGroup.position.x = gsap.utils.interpolate(-1.2, 2.5, p3);
+
+              updateCards(2);
+            }
+
+            satGroup.userData.baseY = satGroup.position.y;
+          }
+        });
+      }
+
       /* Boot */
       function boot() {
         initCursor();
         initMagnetic();
         initTilt();
         initScrollStory();
+        init3DScrollExperience();
 
         var startExperience = function () {
           prepareHeroSplit();
