@@ -1337,6 +1337,44 @@
       color: var(--faint);
     }
 
+    /* ——— Video Modal / Lightbox ——— */
+    .lightbox-video {
+      background: oklch(0.05 0 0 / 0.94);
+      border: none;
+      padding: 0;
+    }
+    .video-modal-content {
+      position: relative;
+      width: min(92vw, 1060px);
+      margin: auto;
+    }
+    .video-embed-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 25px 70px oklch(0 0 0 / 0.85), 0 0 0 1px oklch(0.82 0.15 113 / 0.3);
+      background: #000;
+    }
+    .video-embed-wrapper iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .lightbox-video .lightbox-close {
+      top: -3.5rem;
+      right: 0;
+    }
+    @media (max-width: 640px) {
+      .lightbox-video .lightbox-close {
+        top: -3rem;
+        right: 0.25rem;
+      }
+    }
+
     /* ——— Scroll-story states ——— */
     .pin-stage { position: relative; }
     .pin-stage-inner { width: 100%; }
@@ -1787,18 +1825,17 @@
               height="900"
               loading="lazy"
             />
-            <a
+            <button
+              type="button"
               class="play"
-              href="https://www.youtube.com/watch?v=qr1AvisQcV8"
-              target="_blank"
-              rel="noopener noreferrer"
+              data-open-video="qr1AvisQcV8"
               data-cursor="Play"
-              aria-label="Assistir no YouTube: I Spent $5,000,000 So You Can Go To Space For FREE — Mark Rober"
+              aria-label="Assistir vídeo oficial da missão — Mark Rober"
             >
               <span class="play-icon" aria-hidden="true">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
               </span>
-            </a>
+            </button>
           </div>
           <div class="video-copy">
             <h3>Vídeo oficial da missão (Mark Rober)</h3>
@@ -1806,10 +1843,10 @@
               Da concepção ao lançamento do SAT&nbsp;GUS, e por que a selfie ficou gratuita para o planeta.
             </p>
             <p>
-              <a class="btn btn-primary btn-magnetic" href="https://www.youtube.com/watch?v=qr1AvisQcV8" target="_blank" rel="noopener noreferrer" data-cursor="YT">
+              <button type="button" class="btn btn-primary btn-magnetic" data-open-video="qr1AvisQcV8" data-cursor="Play">
                 <span class="btn-fill" aria-hidden="true"></span>
-                <span class="btn-label">Assistir no YouTube</span>
-              </a>
+                <span class="btn-label">Assistir vídeo oficial</span>
+              </button>
             </p>
           </div>
         </div>
@@ -2254,6 +2291,21 @@
     <p class="lightbox-hint">Esc ou clique fora para fechar</p>
   </dialog>
 
+  <dialog class="lightbox lightbox-video" id="video-modal" aria-label="Vídeo oficial da missão">
+    <div class="video-modal-content">
+      <button type="button" class="lightbox-close" id="video-modal-close" aria-label="Fechar vídeo">&times;</button>
+      <div class="video-embed-wrapper">
+        <iframe
+          id="video-iframe"
+          src=""
+          title="Vídeo oficial da missão — Mark Rober"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -2318,7 +2370,55 @@
       });
       document.addEventListener("keydown", function (e) {
         if (e.key !== "Escape") return;
-        if (lightbox.open || lightbox.hasAttribute("open")) closeLb();
+        if (lightbox && (lightbox.open || lightbox.hasAttribute("open"))) closeLb();
+      });
+
+      /* ——— Video Modal ——— */
+      var videoModal = document.getElementById("video-modal");
+      var videoIframe = document.getElementById("video-iframe");
+      var videoCloseBtn = document.getElementById("video-modal-close");
+
+      function openVideoModal(videoId) {
+        if (!videoModal || !videoIframe) return;
+        var embedUrl = "https://www.youtube-nocookie.com/embed/" + (videoId || "qr1AvisQcV8") + "?autoplay=1&rel=0";
+        videoIframe.src = embedUrl;
+        if (typeof videoModal.showModal === "function") videoModal.showModal();
+        else videoModal.setAttribute("open", "");
+        if (videoCloseBtn) videoCloseBtn.focus();
+      }
+
+      function closeVideoModal() {
+        if (!videoModal || !videoIframe) return;
+        videoIframe.src = "";
+        if (typeof videoModal.close === "function") videoModal.close();
+        else videoModal.removeAttribute("open");
+      }
+
+      document.querySelectorAll("[data-open-video]").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          var videoId = btn.getAttribute("data-open-video") || "qr1AvisQcV8";
+          openVideoModal(videoId);
+        });
+      });
+
+      if (videoCloseBtn) {
+        videoCloseBtn.addEventListener("click", closeVideoModal);
+      }
+      if (videoModal) {
+        videoModal.addEventListener("click", function (e) {
+          if (e.target === videoModal) closeVideoModal();
+        });
+        videoModal.addEventListener("cancel", function (e) {
+          e.preventDefault();
+          closeVideoModal();
+        });
+      }
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") return;
+        if (videoModal && (videoModal.open || videoModal.hasAttribute("open"))) {
+          closeVideoModal();
+        }
       });
 
       /* ——— Starfield ——— */
