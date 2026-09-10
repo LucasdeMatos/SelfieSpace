@@ -1557,11 +1557,11 @@
     .sec-3d-hint::before {
       content: "↓";
       display: inline-block;
-      animation: bounce-hint 1.5s infinite;
+      animation: orbit-hint 1.8s var(--ease-out) infinite;
     }
-    @keyframes bounce-hint {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(4px); }
+    @keyframes orbit-hint {
+      0%, 100% { transform: translateY(0); opacity: 0.68; }
+      50% { transform: translateY(3px); opacity: 1; }
     }
     .sec-3d-cards {
       position: relative;
@@ -1642,17 +1642,32 @@
       font-weight: 600;
     }
     @media (max-width: 767px) {
-      .sec-3d { height: 240vh; }
+      .sec-3d { height: 250vh; }
+      .sec-3d-overlay {
+        padding: 5.4rem var(--pad) 1.15rem;
+      }
       .sec-3d-cards {
         max-width: 100%;
-        margin-top: auto;
-        height: auto;
-        min-height: 140px;
+        height: min(11.5rem, 29vh);
+        min-height: 0;
+        margin: auto 0 0;
+        align-self: stretch;
       }
       .sec-3d-card {
-        position: relative;
-        inset: auto;
-        transform: none;
+        position: absolute;
+        inset: 0;
+        padding: 1rem 1.1rem;
+        transform: translateY(10px) scale(0.98);
+      }
+      .sec-3d-card.is-active {
+        transform: translateY(0) scale(1);
+      }
+      .sec-3d-card h3 {
+        font-size: 1rem;
+      }
+      .sec-3d-card p {
+        font-size: 0.84rem;
+        line-height: 1.38;
       }
       .sec-3d-hud { display: none; }
     }
@@ -3378,7 +3393,7 @@
         scene.fog = new THREE.FogExp2(0x06070a, 0.018);
 
         var camera = new THREE.PerspectiveCamera(
-          45,
+          window.innerWidth < 768 ? 52 : 45,
           window.innerWidth / window.innerHeight,
           0.1,
           100
@@ -3391,47 +3406,59 @@
           antialias: true,
           powerPreference: "high-performance"
         });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, finePointer ? 2 : 1.5));
         renderer.setSize(window.innerWidth, window.innerHeight);
+        if (THREE.SRGBColorSpace) renderer.outputColorSpace = THREE.SRGBColorSpace;
         if (THREE.ACESFilmicToneMapping) {
           renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          renderer.toneMappingExposure = 1.25;
+          renderer.toneMappingExposure = 1.08;
         }
 
-        /* Procedural Textures Generator for Photorealistic Materials */
+        /* Procedural textures keep the 3D scene self-contained and lightweight. */
         function createSolarGridTexture() {
           var cv = document.createElement("canvas");
-          cv.width = 512;
-          cv.height = 512;
+          cv.width = 1024;
+          cv.height = 768;
           var ctx = cv.getContext("2d");
-          ctx.fillStyle = "#091728";
-          ctx.fillRect(0, 0, 512, 512);
+          var cols = 16;
+          var rows = 12;
+          var w = cv.width / cols;
+          var h = cv.height / rows;
 
-          var cols = 4;
-          var rows = 3;
-          var w = 512 / cols;
-          var h = 512 / rows;
+          ctx.fillStyle = "#050b12";
+          ctx.fillRect(0, 0, cv.width, cv.height);
+          ctx.fillStyle = "#1b2e43";
+          ctx.fillRect(10, 10, cv.width - 20, cv.height - 20);
 
           for (var r = 0; r < rows; r++) {
             for (var c = 0; c < cols; c++) {
-              ctx.fillStyle = "#0c2848";
-              ctx.fillRect(c * w + 5, r * h + 5, w - 10, h - 10);
-
-              var grad = ctx.createLinearGradient(c * w, r * h, (c + 1) * w, (r + 1) * h);
-              grad.addColorStop(0, "rgba(40, 120, 220, 0.45)");
-              grad.addColorStop(0.5, "rgba(10, 35, 70, 0.15)");
-              grad.addColorStop(1, "rgba(80, 160, 255, 0.35)");
+              var x = c * w + 4;
+              var y = r * h + 4;
+              var grad = ctx.createLinearGradient(x, y, x + w, y + h);
+              grad.addColorStop(0, "#1e4f84");
+              grad.addColorStop(0.45, "#0b2342");
+              grad.addColorStop(1, "#061429");
               ctx.fillStyle = grad;
-              ctx.fillRect(c * w + 7, r * h + 7, w - 14, h - 14);
+              ctx.fillRect(x, y, w - 8, h - 8);
 
-              /* Gold Busbar Lines */
-              ctx.fillStyle = "#d4af37";
-              ctx.fillRect(c * w + w / 2 - 2, r * h + 5, 4, h - 10);
+              ctx.strokeStyle = "rgba(136, 191, 255, 0.28)";
+              ctx.lineWidth = 1;
+              ctx.strokeRect(x + 0.5, y + 0.5, w - 9, h - 9);
+
+              ctx.fillStyle = "rgba(214, 231, 255, 0.36)";
+              ctx.fillRect(x + w * 0.33, y + 4, 1.25, h - 16);
+              ctx.fillRect(x + w * 0.66, y + 4, 1.25, h - 16);
             }
           }
+          ctx.strokeStyle = "#6d8196";
+          ctx.lineWidth = 8;
+          ctx.strokeRect(6, 6, cv.width - 12, cv.height - 12);
+
           var tex = new THREE.CanvasTexture(cv);
           tex.wrapS = THREE.RepeatWrapping;
-          tex.wrapT = THREE.RepeatWrapping;
+          tex.wrapT = THREE.ClampToEdgeWrapping;
+          tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+          if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
           return tex;
         }
 
@@ -3463,124 +3490,217 @@
           return tex;
         }
 
-        /* Enhanced Space & Studio Lighting */
-        var ambientLight = new THREE.AmbientLight(0x7090b0, 0.7);
+        /* One sun direction plus restrained Earth bounce keeps the materials believable. */
+        var ambientLight = new THREE.AmbientLight(0x24364b, 0.55);
         scene.add(ambientLight);
 
-        /* Main Sunlight (Bright Key Light) */
-        var sunLight = new THREE.DirectionalLight(0xfffaed, 3.2);
-        sunLight.position.set(14, 12, 9);
+        var sunLight = new THREE.DirectionalLight(0xfff3d9, 2.8);
+        sunLight.position.set(11, 8, 13);
         scene.add(sunLight);
 
-        /* Earth Atmosphere Bounce Light (Cool Cyan Fill) */
-        var earthBounceLight = new THREE.DirectionalLight(0x00d8ff, 1.9);
-        earthBounceLight.position.set(-12, -8, -5);
+        var earthBounceLight = new THREE.DirectionalLight(0x4bb4ff, 0.55);
+        earthBounceLight.position.set(-8, -5, -6);
         scene.add(earthBounceLight);
 
-        /* Gold Rim Light (Warm Rear Contour Highlight) */
-        var goldRimLight = new THREE.DirectionalLight(0xffaa22, 2.4);
-        goldRimLight.position.set(-8, 10, -10);
-        scene.add(goldRimLight);
+        var rimLight = new THREE.DirectionalLight(0x8fc7ff, 0.95);
+        rimLight.position.set(-10, 6, -8);
+        scene.add(rimLight);
 
-        /* Procedural Vivid Earth Map Generator (Azul e Verde Vibrante) */
-        function createVividEarthTexture() {
-          var cv = document.createElement("canvas");
-          cv.width = 1024;
-          cv.height = 512;
-          var ctx = cv.getContext("2d");
+        /* A lightweight equirectangular Earth: recognizable continents, terrain, ice and clouds. */
+        function createEarthTextures() {
+          var width = 1536;
+          var height = 768;
+          var mapCanvas = document.createElement("canvas");
+          mapCanvas.width = width;
+          mapCanvas.height = height;
+          var mapCtx = mapCanvas.getContext("2d");
 
-          /* 1. Deep Ocean & Coastal Shelves */
-          var oceanGrad = ctx.createLinearGradient(0, 0, 0, 512);
-          oceanGrad.addColorStop(0, "#082a52");
-          oceanGrad.addColorStop(0.2, "#0d5cb6");
-          oceanGrad.addColorStop(0.5, "#1565c0"); // Blue Ocean
-          oceanGrad.addColorStop(0.8, "#0d5cb6");
-          oceanGrad.addColorStop(1, "#082a52");
-          ctx.fillStyle = oceanGrad;
-          ctx.fillRect(0, 0, 1024, 512);
-
-          /* Coastal Turquoise Shimmers */
-          ctx.fillStyle = "rgba(0, 229, 255, 0.35)";
-          var coasts = [
-            [320, 300, 120, 160], [230, 140, 160, 110], [540, 120, 140, 90],
-            [680, 130, 200, 110], [520, 280, 120, 150], [860, 260, 120, 110], [880, 370, 95, 75]
-          ];
-          coasts.forEach(function(c) {
-            ctx.beginPath();
-            ctx.ellipse(c[0], c[1], c[2], c[3], 0, 0, Math.PI * 2);
-            ctx.fill();
-          });
-
-          /* 2. Continents (Vivid Emerald Greens, Rainforests & Golden Deserts) */
-          function drawLand(cx, cy, rx, ry, colorCore, colorBorder) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.ellipse(cx, cy, rx, ry, Math.PI / 7, 0, Math.PI * 2);
-            var grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, Math.max(rx, ry));
-            grad.addColorStop(0, colorCore);
-            grad.addColorStop(0.75, colorBorder);
-            grad.addColorStop(1, "rgba(0,0,0,0)");
-            ctx.fillStyle = grad;
-            ctx.fill();
-            ctx.restore();
+          function seededRandom(seed) {
+            var state = seed >>> 0;
+            return function () {
+              state = (state * 1664525 + 1013904223) >>> 0;
+              return state / 4294967296;
+            };
           }
 
-          /* South America */
-          drawLand(320, 310, 75, 135, "#2e7d32", "#1b5e20");
-          drawLand(340, 260, 55, 55, "#43a047", "#2e7d32");
-
-          /* North America */
-          drawLand(230, 140, 120, 85, "#388e3c", "#1b5e20");
-          drawLand(170, 170, 65, 65, "#689f38", "#33691e");
-
-          /* Europe & Eurasia */
-          drawLand(540, 120, 100, 65, "#43a047", "#1b5e20");
-          drawLand(680, 130, 160, 85, "#558b2f", "#2e7d32");
-
-          /* Africa (Sahara Desert + Congo Jungle) */
-          drawLand(520, 250, 85, 60, "#fbc02d", "#c0ca33");
-          drawLand(540, 320, 70, 90, "#2e7d32", "#1b5e20");
-
-          /* Asia & India */
-          drawLand(730, 200, 75, 65, "#d4e157", "#827717");
-          drawLand(760, 240, 48, 58, "#388e3c", "#1b5e20");
-          drawLand(860, 260, 85, 85, "#2e7d32", "#1b5e20");
-
-          /* Australia */
-          drawLand(880, 370, 70, 50, "#e65100", "#f57f17");
-
-          /* 3. Polar Ice Caps (Pure White) */
-          ctx.fillStyle = "#ffffff";
-          ctx.beginPath();
-          ctx.ellipse(512, 15, 512, 35, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.ellipse(512, 497, 512, 38, 0, 0, Math.PI * 2);
-          ctx.fill();
-
-          /* 4. Soft Wispy Cloud Bands (Suaves e naturais) */
-          ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
-          var cloudBands = [
-            [512, 110, 480, 22],
-            [512, 230, 450, 18],
-            [512, 360, 470, 20]
-          ];
-          cloudBands.forEach(function(b) {
+          function tracePath(ctx, points) {
             ctx.beginPath();
-            ctx.ellipse(b[0], b[1], b[2], b[3], 0, 0, Math.PI * 2);
-            ctx.fill();
-          });
+            points.forEach(function (point, index) {
+              var x = point[0] * width;
+              var y = point[1] * height;
+              if (index === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+          }
 
-          var tex = new THREE.CanvasTexture(cv);
-          return tex;
+          function fillFeature(points, color) {
+            mapCtx.save();
+            tracePath(mapCtx, points);
+            mapCtx.fillStyle = color;
+            mapCtx.fill();
+            mapCtx.restore();
+          }
+
+          function strokeFeature(points, color, lineWidth) {
+            mapCtx.save();
+            mapCtx.beginPath();
+            points.forEach(function (point, index) {
+              var x = point[0] * width;
+              var y = point[1] * height;
+              if (index === 0) mapCtx.moveTo(x, y);
+              else mapCtx.lineTo(x, y);
+            });
+            mapCtx.strokeStyle = color;
+            mapCtx.lineWidth = lineWidth;
+            mapCtx.lineCap = "round";
+            mapCtx.lineJoin = "round";
+            mapCtx.stroke();
+            mapCtx.restore();
+          }
+
+          var oceanGradient = mapCtx.createLinearGradient(0, 0, 0, height);
+          oceanGradient.addColorStop(0, "#071b36");
+          oceanGradient.addColorStop(0.22, "#0a3f70");
+          oceanGradient.addColorStop(0.5, "#12699a");
+          oceanGradient.addColorStop(0.78, "#0a3f70");
+          oceanGradient.addColorStop(1, "#071b36");
+          mapCtx.fillStyle = oceanGradient;
+          mapCtx.fillRect(0, 0, width, height);
+
+          var terrainRandom = seededRandom(62713);
+          for (var wave = 0; wave < 36; wave++) {
+            var waveY = (0.11 + terrainRandom() * 0.78) * height;
+            mapCtx.beginPath();
+            mapCtx.moveTo(0, waveY);
+            for (var waveX = 0; waveX <= width; waveX += 56) {
+              mapCtx.lineTo(
+                waveX,
+                waveY + Math.sin(waveX * 0.012 + wave * 1.7) * (2 + terrainRandom() * 4)
+              );
+            }
+            mapCtx.strokeStyle = "rgba(121, 200, 237, 0.055)";
+            mapCtx.lineWidth = 1;
+            mapCtx.stroke();
+          }
+
+          function drawLand(points, palette, detailCount) {
+            var minX = 1;
+            var maxX = 0;
+            var minY = 1;
+            var maxY = 0;
+            points.forEach(function (point) {
+              minX = Math.min(minX, point[0]);
+              maxX = Math.max(maxX, point[0]);
+              minY = Math.min(minY, point[1]);
+              maxY = Math.max(maxY, point[1]);
+            });
+
+            mapCtx.save();
+            tracePath(mapCtx, points);
+            mapCtx.fillStyle = palette.base;
+            mapCtx.fill();
+            mapCtx.lineWidth = 3;
+            mapCtx.strokeStyle = palette.coast;
+            mapCtx.stroke();
+            mapCtx.clip();
+
+            for (var detail = 0; detail < detailCount; detail++) {
+              var x = (minX + terrainRandom() * (maxX - minX)) * width;
+              var y = (minY + terrainRandom() * (maxY - minY)) * height;
+              var radius = (18 + terrainRandom() * 62) * (maxX - minX + maxY - minY) * 3.2;
+              var terrain = mapCtx.createRadialGradient(x, y, 0, x, y, radius);
+              terrain.addColorStop(0, palette.highlight);
+              terrain.addColorStop(0.72, "rgba(0, 0, 0, 0)");
+              mapCtx.fillStyle = terrain;
+              mapCtx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+            }
+            mapCtx.restore();
+          }
+
+          var green = { base: "#3c7450", coast: "rgba(165, 214, 184, 0.48)", highlight: "rgba(149, 183, 93, 0.42)" };
+          var temperate = { base: "#5d7b4d", coast: "rgba(203, 220, 176, 0.44)", highlight: "rgba(181, 163, 98, 0.42)" };
+          var dry = { base: "#937a4f", coast: "rgba(235, 211, 158, 0.42)", highlight: "rgba(214, 174, 102, 0.45)" };
+          var ice = { base: "#cbdce1", coast: "rgba(248, 254, 255, 0.75)", highlight: "rgba(255, 255, 255, 0.7)" };
+
+          /* Americas */
+          drawLand([[0.06, 0.24], [0.10, 0.17], [0.17, 0.12], [0.24, 0.16], [0.29, 0.24], [0.32, 0.29], [0.29, 0.35], [0.25, 0.35], [0.22, 0.40], [0.18, 0.34], [0.12, 0.31], [0.08, 0.28]], green, 16);
+          drawLand([[0.32, 0.10], [0.38, 0.07], [0.44, 0.10], [0.45, 0.17], [0.41, 0.23], [0.35, 0.21], [0.31, 0.16]], ice, 8);
+          drawLand([[0.29, 0.40], [0.34, 0.39], [0.38, 0.45], [0.39, 0.54], [0.37, 0.64], [0.35, 0.76], [0.31, 0.84], [0.28, 0.79], [0.26, 0.69], [0.26, 0.56]], green, 14);
+
+          /* Europe, Africa and Asia */
+          drawLand([[0.46, 0.23], [0.50, 0.19], [0.56, 0.20], [0.59, 0.25], [0.56, 0.31], [0.51, 0.31], [0.47, 0.28]], temperate, 9);
+          drawLand([[0.47, 0.35], [0.54, 0.33], [0.60, 0.40], [0.60, 0.50], [0.57, 0.63], [0.53, 0.74], [0.49, 0.68], [0.46, 0.55], [0.45, 0.43]], dry, 17);
+          drawLand([[0.56, 0.20], [0.65, 0.14], [0.76, 0.16], [0.86, 0.22], [0.92, 0.31], [0.88, 0.38], [0.80, 0.41], [0.73, 0.48], [0.65, 0.45], [0.59, 0.40], [0.57, 0.32]], temperate, 22);
+          drawLand([[0.58, 0.36], [0.63, 0.38], [0.66, 0.46], [0.63, 0.49], [0.59, 0.45]], dry, 7);
+          drawLand([[0.66, 0.43], [0.70, 0.46], [0.71, 0.55], [0.68, 0.59], [0.65, 0.51]], green, 6);
+
+          /* Islands and Oceania */
+          drawLand([[0.73, 0.35], [0.75, 0.33], [0.76, 0.40], [0.74, 0.43]], green, 3);
+          drawLand([[0.78, 0.64], [0.84, 0.61], [0.90, 0.66], [0.89, 0.74], [0.84, 0.78], [0.78, 0.74]], dry, 9);
+          drawLand([[0.34, 0.34], [0.35, 0.33], [0.36, 0.36], [0.35, 0.38]], green, 2);
+
+          /* Regional detail reinforces the real map logic without relying on a bitmap. */
+          fillFeature([[0.47, 0.37], [0.55, 0.35], [0.58, 0.41], [0.54, 0.46], [0.48, 0.43]], "rgba(224, 185, 108, 0.55)");
+          fillFeature([[0.29, 0.49], [0.34, 0.47], [0.37, 0.56], [0.34, 0.62], [0.29, 0.58]], "rgba(33, 105, 65, 0.58)");
+          fillFeature([[0.70, 0.22], [0.81, 0.20], [0.84, 0.28], [0.75, 0.32], [0.68, 0.29]], "rgba(205, 174, 100, 0.42)");
+          strokeFeature([[0.33, 0.48], [0.34, 0.54], [0.33, 0.60], [0.32, 0.65]], "rgba(80, 149, 183, 0.68)", 2.2);
+          strokeFeature([[0.54, 0.39], [0.53, 0.46], [0.52, 0.53], [0.53, 0.60]], "rgba(85, 150, 183, 0.66)", 1.8);
+
+          mapCtx.fillStyle = "rgba(232, 245, 251, 0.86)";
+          mapCtx.fillRect(0, 0, width, height * 0.055);
+          mapCtx.fillRect(0, height * 0.935, width, height * 0.065);
+          fillFeature([[0, 0.90], [0.12, 0.87], [0.26, 0.91], [0.39, 0.88], [0.54, 0.92], [0.71, 0.89], [0.86, 0.93], [1, 0.89], [1, 1], [0, 1]], "rgba(220, 238, 243, 0.78)");
+
+          var cloudCanvas = document.createElement("canvas");
+          cloudCanvas.width = width;
+          cloudCanvas.height = height;
+          var cloudCtx = cloudCanvas.getContext("2d");
+          var cloudRandom = seededRandom(2025);
+
+          function drawCloud(x, y, radiusX, radiusY, rotation, opacity) {
+            var cloudGradient = cloudCtx.createRadialGradient(x, y, 0, x, y, radiusX);
+            cloudGradient.addColorStop(0, "rgba(244, 251, 255, " + opacity + ")");
+            cloudGradient.addColorStop(0.55, "rgba(225, 242, 250, " + (opacity * 0.48) + ")");
+            cloudGradient.addColorStop(1, "rgba(220, 240, 250, 0)");
+            cloudCtx.save();
+            cloudCtx.fillStyle = cloudGradient;
+            cloudCtx.beginPath();
+            cloudCtx.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
+            cloudCtx.fill();
+            cloudCtx.restore();
+          }
+
+          for (var cloud = 0; cloud < 66; cloud++) {
+            var cloudX = cloudRandom() * width;
+            var cloudY = (0.14 + cloudRandom() * 0.72) * height;
+            var cloudRadiusX = (0.015 + cloudRandom() * 0.042) * width;
+            var cloudRadiusY = cloudRadiusX * (0.11 + cloudRandom() * 0.17);
+            drawCloud(cloudX, cloudY, cloudRadiusX, cloudRadiusY, (cloudRandom() - 0.5) * 0.5, 0.18 + cloudRandom() * 0.18);
+          }
+
+          function makeTexture(canvas) {
+            var texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            if (THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+            return texture;
+          }
+
+          return {
+            map: makeTexture(mapCanvas),
+            clouds: makeTexture(cloudCanvas)
+          };
         }
 
         /* Texture Loader & Immediate Rendering */
-        var vividEarthTex = createVividEarthTexture();
+        var earthTextures = createEarthTextures();
 
         var textureLoader = new THREE.TextureLoader();
         var selfieTexture = textureLoader.load("assets/nossa-selfie-espacial.jpg");
         if (THREE.SRGBColorSpace) selfieTexture.colorSpace = THREE.SRGBColorSpace;
+        selfieTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
         var solarTexture = createSolarGridTexture();
         var bodyBumpTexture = createSatBodyBumpTexture();
@@ -3589,30 +3709,67 @@
         var earthGroup = new THREE.Group();
         scene.add(earthGroup);
 
-        /* Main Earth Body (Azul e Verde Vibrantes) */
-        var earthGeo = new THREE.SphereGeometry(4.2, 64, 64);
+        /* Main Earth: a procedurally drawn world map, rather than a flat stock bitmap. */
+        var earthGeo = new THREE.SphereGeometry(4.2, 80, 64);
         var earthMat = new THREE.MeshStandardMaterial({
-          map: vividEarthTex,
-          roughness: 0.4,
-          metalness: 0.1
+          map: earthTextures.map,
+          roughness: 0.58,
+          metalness: 0,
+          emissive: 0x071525,
+          emissiveIntensity: 0.1
         });
         var earthMesh = new THREE.Mesh(earthGeo, earthMat);
         earthGroup.add(earthMesh);
 
-        /* Tentar carregar a textura da NASA em segundo plano se disponível */
-        textureLoader.load("assets/earth-blue-marble.jpg", function (t) {
-          if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
-          earthMat.map = t;
-          earthMat.needsUpdate = true;
-        }, undefined, function () {});
-
-        /* Atmosphere Outer Glow Shell */
-        var atmosGeo = new THREE.SphereGeometry(4.4, 48, 48);
-        var atmosMat = new THREE.MeshBasicMaterial({
-          color: 0x00bfff,
+        /* Clouds sit just above the surface and drift independently from the landmass. */
+        var cloudGeo = new THREE.SphereGeometry(4.245, 80, 64);
+        var cloudMat = new THREE.MeshStandardMaterial({
+          map: earthTextures.clouds,
           transparent: true,
-          opacity: 0.25,
-          side: THREE.BackSide
+          opacity: 0.42,
+          roughness: 0.82,
+          metalness: 0,
+          depthWrite: false
+        });
+        var cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+        cloudMesh.rotation.y = 0.16;
+        earthGroup.add(cloudMesh);
+
+        /* Fresnel atmosphere: cyan only at the limb, like a thin atmosphere in sunlight. */
+        var atmosGeo = new THREE.SphereGeometry(4.38, 64, 64);
+        var atmosMat = new THREE.ShaderMaterial({
+          uniforms: {
+            glowColor: { value: new THREE.Color(0x4cc9ff) },
+            glowPower: { value: 2.45 },
+            glowIntensity: { value: 0.78 }
+          },
+          vertexShader: [
+            "varying vec3 vNormal;",
+            "varying vec3 vWorldPosition;",
+            "void main() {",
+            "  vNormal = normalize(mat3(modelMatrix) * normal);",
+            "  vec4 worldPosition = modelMatrix * vec4(position, 1.0);",
+            "  vWorldPosition = worldPosition.xyz;",
+            "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+            "}"
+          ].join("\n"),
+          fragmentShader: [
+            "uniform vec3 glowColor;",
+            "uniform float glowPower;",
+            "uniform float glowIntensity;",
+            "varying vec3 vNormal;",
+            "varying vec3 vWorldPosition;",
+            "void main() {",
+            "  vec3 viewDirection = normalize(cameraPosition - vWorldPosition);",
+            "  float rim = 1.0 - max(dot(normalize(vNormal), viewDirection), 0.0);",
+            "  float alpha = pow(rim, glowPower) * glowIntensity;",
+            "  gl_FragColor = vec4(glowColor, alpha);",
+            "}"
+          ].join("\n"),
+          transparent: true,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
         });
         var atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
         earthGroup.add(atmosMesh);
@@ -3620,9 +3777,9 @@
         /* Orbit Ring */
         var orbitRingGeo = new THREE.RingGeometry(6.2, 6.25, 96);
         var orbitRingMat = new THREE.MeshBasicMaterial({
-          color: 0x82f073,
+          color: 0x8dddf7,
           transparent: true,
-          opacity: 0.35,
+          opacity: 0.18,
           side: THREE.DoubleSide
         });
         var orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
@@ -3632,57 +3789,116 @@
         earthGroup.position.set(-4.5, -2, -3);
 
         /* 3D Satellite CubeSat (SAT GUS) */
+        var satRig = new THREE.Group();
         var satGroup = new THREE.Group();
-        scene.add(satGroup);
+        satRig.add(satGroup);
+        scene.add(satRig);
 
-        /* Sat Main Body (12U CubeSat titanium frame with Bump Map) */
+        /* Sat Main Body: dark anodized aluminium with a restrained machined finish. */
         var bodyGeo = new THREE.BoxGeometry(1.4, 2.6, 1.4);
         var bodyMat = new THREE.MeshStandardMaterial({
-          color: 0x1a212b,
+          color: 0x202a35,
           bumpMap: bodyBumpTexture,
-          bumpScale: 0.03,
-          roughness: 0.22,
-          metalness: 0.88
+          bumpScale: 0.022,
+          roughness: 0.42,
+          metalness: 0.72
         });
         var satBody = new THREE.Mesh(bodyGeo, bodyMat);
         satGroup.add(satBody);
 
-        /* Gold Foil Bezel Edges (High Metal Gloss) */
-        var edgeGeo = new THREE.BoxGeometry(1.43, 2.63, 0.05);
-        var edgeMat = new THREE.MeshStandardMaterial({
-          color: 0xffd700,
-          roughness: 0.12,
+        /* Dark front service panel keeps the display integrated with the CubeSat body. */
+        var frontPanelGeo = new THREE.BoxGeometry(1.43, 2.63, 0.06);
+        var frontPanelMat = new THREE.MeshStandardMaterial({
+          color: 0x111923,
+          roughness: 0.42,
+          metalness: 0.72
+        });
+        var frontPanel = new THREE.Mesh(frontPanelGeo, frontPanelMat);
+        frontPanel.position.z = 0.715;
+        satGroup.add(frontPanel);
+
+        /* Structural rails and fasteners give the CubeSat an assembled, not monolithic, feel. */
+        var railMat = new THREE.MeshStandardMaterial({
+          color: 0x8d9baa,
+          roughness: 0.3,
+          metalness: 0.9
+        });
+        var verticalRailGeo = new THREE.BoxGeometry(0.075, 2.56, 0.09);
+        [-0.675, 0.675].forEach(function (x) {
+          var rail = new THREE.Mesh(verticalRailGeo, railMat);
+          rail.position.set(x, 0, 0.775);
+          satGroup.add(rail);
+        });
+        var horizontalRailGeo = new THREE.BoxGeometry(1.36, 0.075, 0.09);
+        [-1.265, 1.265].forEach(function (y) {
+          var rail = new THREE.Mesh(horizontalRailGeo, railMat);
+          rail.position.set(0, y, 0.775);
+          satGroup.add(rail);
+        });
+        var fastenerGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.025, 16);
+        var fastenerMat = new THREE.MeshStandardMaterial({
+          color: 0x384656,
+          roughness: 0.22,
           metalness: 0.95
         });
-        var satBezel = new THREE.Mesh(edgeGeo, edgeMat);
-        satBezel.position.z = 0.68;
-        satGroup.add(satBezel);
+        [[-0.56, -1.05], [0.56, -1.05], [-0.56, 1.05], [0.56, 1.05]].forEach(function (point) {
+          var fastener = new THREE.Mesh(fastenerGeo, fastenerMat);
+          fastener.rotation.x = Math.PI / 2;
+          fastener.position.set(point[0], point[1], 0.84);
+          satGroup.add(fastener);
+        });
 
-        /* Screen Display (Google Pixel with Emissive Glow) */
-        var screenGeo = new THREE.PlaneGeometry(1.25, 2.25);
+        /*
+         * The returned Space Selfie is landscape (4000 × 3159). The old portrait
+         * plane stretched it vertically; this display now follows the photo's real
+         * aspect ratio throughout the animation.
+         */
+        var selfieAspect = 4000 / 3159;
+        var screenWidth = 1.22;
+        var screenHeight = screenWidth / selfieAspect;
+        var screenY = 0.04;
+
+        /* Recessed, dark-metal bezel gives the image a proper display boundary. */
+        var screenFrameGeo = new THREE.BoxGeometry(
+          screenWidth + 0.13,
+          screenHeight + 0.13,
+          0.055
+        );
+        var screenFrameMat = new THREE.MeshStandardMaterial({
+          color: 0x070a0e,
+          roughness: 0.24,
+          metalness: 0.92
+        });
+        var screenFrame = new THREE.Mesh(screenFrameGeo, screenFrameMat);
+        screenFrame.position.set(0, screenY, 0.755);
+        satGroup.add(screenFrame);
+
+        /* Screen Display (Google Pixel with emissive, but faithful, color) */
+        var screenGeo = new THREE.PlaneGeometry(screenWidth, screenHeight);
         var screenMat = new THREE.MeshStandardMaterial({
           map: selfieTexture,
           emissive: 0xffffff,
           emissiveMap: selfieTexture,
-          emissiveIntensity: 0.22,
-          roughness: 0.1,
-          metalness: 0.1
+          emissiveIntensity: 0.12,
+          roughness: 0.22,
+          metalness: 0.05
         });
         var screenMesh = new THREE.Mesh(screenGeo, screenMat);
-        screenMesh.position.z = 0.72;
+        screenMesh.position.set(0, screenY, 0.788);
         satGroup.add(screenMesh);
 
-        /* Glass Screen Overlay Glare (Specular Glass Layer) */
-        var glassGeo = new THREE.PlaneGeometry(1.26, 2.26);
+        /* Subtle glass layer: enough depth without washing out the real photo. */
+        var glassGeo = new THREE.PlaneGeometry(screenWidth + 0.006, screenHeight + 0.006);
         var glassMat = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
-          roughness: 0.04,
-          metalness: 0.95,
+          color: 0x9fcaff,
+          roughness: 0.06,
+          metalness: 0.25,
           transparent: true,
-          opacity: 0.32
+          opacity: 0.14,
+          depthWrite: false
         });
         var glassMesh = new THREE.Mesh(glassGeo, glassMat);
-        glassMesh.position.z = 0.735;
+        glassMesh.position.set(0, screenY, 0.8);
         satGroup.add(glassMesh);
 
         /* Screen Soft Point Light Glow */
@@ -3690,29 +3906,50 @@
         screenPointLight.position.set(0, 0, 1.1);
         satGroup.add(screenPointLight);
 
-        /* Redwire Camera Module (Multi-part Lens Assembly) */
-        var lensHousingGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.42, 32);
+        /* Front-facing camera module, mounted above the Pixel display. */
+        var cameraMountGeo = new THREE.BoxGeometry(0.58, 0.34, 0.1);
+        var cameraMountMat = new THREE.MeshStandardMaterial({
+          color: 0x17212c,
+          roughness: 0.35,
+          metalness: 0.82
+        });
+        var cameraMount = new THREE.Mesh(cameraMountGeo, cameraMountMat);
+        cameraMount.position.set(0, 1.08, 0.79);
+        satGroup.add(cameraMount);
+
+        var lensHousingGeo = new THREE.CylinderGeometry(0.245, 0.265, 0.3, 32);
         var lensHousingMat = new THREE.MeshStandardMaterial({
-          color: 0x0f1217,
-          metalness: 0.95,
-          roughness: 0.12
+          color: 0x0b1016,
+          metalness: 0.88,
+          roughness: 0.2
         });
         var lensHousing = new THREE.Mesh(lensHousingGeo, lensHousingMat);
-        lensHousing.position.set(0, 1.45, 0.3);
-        lensHousing.rotation.x = Math.PI / 4;
+        lensHousing.position.set(0, 1.2, 0.86);
+        lensHousing.rotation.x = Math.PI / 2;
         satGroup.add(lensHousing);
 
-        var lensGlassGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.44, 32);
+        var lensRingGeo = new THREE.CylinderGeometry(0.21, 0.225, 0.07, 32);
+        var lensRingMat = new THREE.MeshStandardMaterial({
+          color: 0x8796a7,
+          roughness: 0.23,
+          metalness: 0.94
+        });
+        var lensRing = new THREE.Mesh(lensRingGeo, lensRingMat);
+        lensRing.position.set(0, 1.2, 1.04);
+        lensRing.rotation.x = Math.PI / 2;
+        satGroup.add(lensRing);
+
+        var lensGlassGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.055, 32);
         var lensGlassMat = new THREE.MeshStandardMaterial({
-          color: 0x1050a0,
-          roughness: 0.02,
-          metalness: 0.98,
-          emissive: 0x003366,
-          emissiveIntensity: 0.3
+          color: 0x153f72,
+          roughness: 0.04,
+          metalness: 0.62,
+          emissive: 0x09264a,
+          emissiveIntensity: 0.22
         });
         var lensGlass = new THREE.Mesh(lensGlassGeo, lensGlassMat);
-        lensGlass.position.set(0, 1.45, 0.3);
-        lensGlass.rotation.x = Math.PI / 4;
+        lensGlass.position.set(0, 1.2, 1.09);
+        lensGlass.rotation.x = Math.PI / 2;
         satGroup.add(lensGlass);
 
         /* Solar Panels (Left & Right Wings with Solar Grid Texture) */
@@ -3724,23 +3961,53 @@
         var panelGeo = new THREE.BoxGeometry(2.8, 2.0, 0.04);
         var panelMat = new THREE.MeshStandardMaterial({
           map: solarTexture,
-          roughness: 0.16,
-          metalness: 0.85
+          roughness: 0.3,
+          metalness: 0.45
         });
+        var panelFrameMat = new THREE.MeshStandardMaterial({
+          color: 0x7e8d9d,
+          roughness: 0.32,
+          metalness: 0.88
+        });
+        var panelLongEdgeGeo = new THREE.BoxGeometry(2.88, 0.06, 0.09);
+        var panelShortEdgeGeo = new THREE.BoxGeometry(0.06, 2.04, 0.09);
+
+        function addPanelFrame(group, centerX) {
+          [-1, 1].forEach(function (sign) {
+            var longEdge = new THREE.Mesh(panelLongEdgeGeo, panelFrameMat);
+            longEdge.position.set(centerX, sign * 1.0, 0.02);
+            group.add(longEdge);
+
+            var shortEdge = new THREE.Mesh(panelShortEdgeGeo, panelFrameMat);
+            shortEdge.position.set(centerX + sign * 1.4, 0, 0.02);
+            group.add(shortEdge);
+          });
+        }
 
         var panelLeft = new THREE.Mesh(panelGeo, panelMat);
         panelLeft.position.set(-1.4, 0, 0);
         panelGroupLeft.add(panelLeft);
+        addPanelFrame(panelGroupLeft, -1.4);
         panelGroupLeft.position.set(-0.7, 0, 0);
 
         var panelRight = new THREE.Mesh(panelGeo, panelMat);
         panelRight.position.set(1.4, 0, 0);
         panelGroupRight.add(panelRight);
+        addPanelFrame(panelGroupRight, 1.4);
         panelGroupRight.position.set(0.7, 0, 0);
 
-        /* Sat initial position */
-        satGroup.position.set(5, 3, -2);
-        satGroup.rotation.set(0.4, -0.6, 0.2);
+        var hingeGeo = new THREE.CylinderGeometry(0.075, 0.075, 0.46, 16);
+        [-0.75, 0.75].forEach(function (x) {
+          var hinge = new THREE.Mesh(hingeGeo, railMat);
+          hinge.position.set(x, 0, 0.02);
+          satGroup.add(hinge);
+        });
+        panelGroupLeft.rotation.y = Math.PI / 2.2;
+        panelGroupRight.rotation.y = -Math.PI / 2.2;
+
+        /* The rig carries the flight path; the child group handles only microgravity motion. */
+        satRig.position.set(5, 3, -2);
+        satRig.rotation.set(0.4, -0.6, 0.2);
 
         /* Space Starfield Particles */
         var particleCount = 550;
@@ -3774,36 +4041,61 @@
           }, { passive: true });
         }
 
-        /* Render Loop */
+        /* Render loop: slow planetary drift, stable microgravity, and no offscreen GPU work. */
         var clock = new THREE.Clock();
+        var isSceneVisible = true;
+        var renderFrame = null;
 
         function animate() {
-          requestAnimationFrame(animate);
+          if (document.hidden || !isSceneVisible) {
+            renderFrame = null;
+            return;
+          }
+
+          renderFrame = requestAnimationFrame(animate);
           var elapsed = clock.getElapsedTime();
 
-          /* Gentle Earth self-rotation */
-          earthMesh.rotation.y = elapsed * 0.05;
+          earthMesh.rotation.y = elapsed * 0.018;
+          cloudMesh.rotation.y = 0.16 + elapsed * 0.024;
+          orbitRing.rotation.z = elapsed * 0.018;
 
-          /* Mouse lerp */
-          mouseCurrX += (mouseTargetX - mouseCurrX) * 0.05;
-          mouseCurrY += (mouseTargetY - mouseCurrY) * 0.05;
+          mouseCurrX += (mouseTargetX - mouseCurrX) * 0.045;
+          mouseCurrY += (mouseTargetY - mouseCurrY) * 0.045;
 
-          /* Subtle floating animation */
-          var floatOffsetY = Math.sin(elapsed * 1.5) * 0.08;
+          /* The local float never competes with the scroll-controlled flight path. */
+          satGroup.position.y = Math.sin(elapsed * 0.78) * 0.065;
+          satGroup.position.x = Math.cos(elapsed * 0.54) * 0.012;
+          satGroup.rotation.z = Math.sin(elapsed * 0.62) * 0.012;
 
-          camera.position.x = mouseCurrX * 0.6;
-          camera.position.y = -mouseCurrY * 0.6;
+          camera.position.x = mouseCurrX * 0.5;
+          camera.position.y = -mouseCurrY * 0.5;
           camera.lookAt(0, 0, 0);
-
-          satGroup.position.y += (floatOffsetY - (satGroup.position.y - (satGroup.userData.baseY || 0))) * 0.05;
 
           renderer.render(scene, camera);
         }
-        animate();
+
+        function toggleRenderLoop() {
+          if (document.hidden || !isSceneVisible) {
+            if (renderFrame !== null) cancelAnimationFrame(renderFrame);
+            renderFrame = null;
+            return;
+          }
+          if (renderFrame === null) animate();
+        }
+
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(function (entries) {
+            isSceneVisible = entries[0].isIntersecting;
+            toggleRenderLoop();
+          }, { threshold: 0.01 }).observe(secContainer);
+        }
+        document.addEventListener("visibilitychange", toggleRenderLoop, { passive: true });
+        toggleRenderLoop();
 
         /* Resize Handler */
         function onResize() {
           if (!renderer || !camera) return;
+          camera.fov = window.innerWidth < 768 ? 52 : 45;
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
@@ -3812,14 +4104,19 @@
 
         /* GSAP ScrollTrigger Scrub Control */
         var cards = Array.prototype.slice.call(secContainer.querySelectorAll(".sec-3d-card"));
+        var activeCardIndex = -1;
 
         function updateCards(stepIndex) {
+          if (stepIndex === activeCardIndex) return;
+          activeCardIndex = stepIndex;
           cards.forEach(function (card, idx) {
             card.classList.toggle("is-active", idx === stepIndex);
           });
         }
 
-        satGroup.userData.baseY = 0;
+        function easeOrbitProgress(value) {
+          return value * value * (3 - 2 * value);
+        }
 
         ScrollTrigger.create({
           trigger: secContainer,
@@ -3830,15 +4127,15 @@
             var p = self.progress;
 
             if (p < 0.35) {
-              /* Phase 1: Satellite approaching LEO Earth */
-              var p1 = p / 0.35;
-              satGroup.position.x = gsap.utils.interpolate(5, 1.8, p1);
-              satGroup.position.y = gsap.utils.interpolate(3, 0.2, p1);
-              satGroup.position.z = gsap.utils.interpolate(-2, 3.5, p1);
+              /* Phase 1: approach and panel deployment. */
+              var p1 = easeOrbitProgress(p / 0.35);
+              satRig.position.x = gsap.utils.interpolate(5, 1.8, p1);
+              satRig.position.y = gsap.utils.interpolate(3, 0.2, p1);
+              satRig.position.z = gsap.utils.interpolate(-2, 3.5, p1);
 
-              satGroup.rotation.x = gsap.utils.interpolate(0.4, 0.15, p1);
-              satGroup.rotation.y = gsap.utils.interpolate(-0.6, -0.2, p1);
-              satGroup.rotation.z = gsap.utils.interpolate(0.2, -0.05, p1);
+              satRig.rotation.x = gsap.utils.interpolate(0.4, 0.15, p1);
+              satRig.rotation.y = gsap.utils.interpolate(-0.6, -0.2, p1);
+              satRig.rotation.z = gsap.utils.interpolate(0.2, -0.035, p1);
 
               earthGroup.position.x = gsap.utils.interpolate(-4.5, -3.8, p1);
               earthGroup.position.y = gsap.utils.interpolate(-2, -1.5, p1);
@@ -3848,15 +4145,15 @@
 
               updateCards(0);
             } else if (p < 0.70) {
-              /* Phase 2: Rotating to face the front display & Zooming */
-              var p2 = (p - 0.35) / 0.35;
-              satGroup.position.x = gsap.utils.interpolate(1.8, 0, p2);
-              satGroup.position.y = gsap.utils.interpolate(0.2, 0, p2);
-              satGroup.position.z = gsap.utils.interpolate(3.5, 7.8, p2);
+              /* Phase 2: the stable rig turns the display toward the viewer. */
+              var p2 = easeOrbitProgress((p - 0.35) / 0.35);
+              satRig.position.x = gsap.utils.interpolate(1.8, 0, p2);
+              satRig.position.y = gsap.utils.interpolate(0.2, 0, p2);
+              satRig.position.z = gsap.utils.interpolate(3.5, 7.8, p2);
 
-              satGroup.rotation.x = gsap.utils.interpolate(0.15, 0, p2);
-              satGroup.rotation.y = gsap.utils.interpolate(-0.2, 0, p2);
-              satGroup.rotation.z = gsap.utils.interpolate(-0.05, 0, p2);
+              satRig.rotation.x = gsap.utils.interpolate(0.15, 0, p2);
+              satRig.rotation.y = gsap.utils.interpolate(-0.2, 0, p2);
+              satRig.rotation.z = gsap.utils.interpolate(-0.035, 0, p2);
 
               earthGroup.position.x = gsap.utils.interpolate(-3.8, -1.2, p2);
               earthGroup.position.y = gsap.utils.interpolate(-1.5, -3.2, p2);
@@ -3866,22 +4163,21 @@
 
               updateCards(1);
             } else {
-              /* Phase 3: Detailed view of Selfie Photo on SAT GUS Screen */
-              var p3 = (p - 0.70) / 0.30;
-              satGroup.position.x = gsap.utils.interpolate(0, -0.3, p3);
-              satGroup.position.y = gsap.utils.interpolate(0, -0.15, p3);
-              satGroup.position.z = gsap.utils.interpolate(7.8, 9.8, p3);
+              /* Phase 3: close orbit view, keeping the display square to the camera. */
+              var p3 = easeOrbitProgress((p - 0.70) / 0.30);
+              satRig.position.x = gsap.utils.interpolate(0, -0.18, p3);
+              satRig.position.y = gsap.utils.interpolate(0, -0.12, p3);
+              satRig.position.z = gsap.utils.interpolate(7.8, 10.1, p3);
 
-              satGroup.rotation.x = gsap.utils.interpolate(0, -0.1, p3);
-              satGroup.rotation.y = gsap.utils.interpolate(0, 0.35, p3);
-              satGroup.rotation.z = gsap.utils.interpolate(0, -0.05, p3);
+              satRig.rotation.x = gsap.utils.interpolate(0, -0.04, p3);
+              satRig.rotation.y = gsap.utils.interpolate(0, 0.08, p3);
+              satRig.rotation.z = gsap.utils.interpolate(0, -0.02, p3);
 
               earthGroup.position.x = gsap.utils.interpolate(-1.2, 2.5, p3);
+              earthGroup.position.y = gsap.utils.interpolate(-3.2, -2.55, p3);
 
               updateCards(2);
             }
-
-            satGroup.userData.baseY = satGroup.position.y;
           }
         });
       }
