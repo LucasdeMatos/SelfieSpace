@@ -83,6 +83,18 @@
     body.has-custom-cursor .selfie-stage img {
       cursor: none;
     }
+    /* Dialogs open in the top layer, above the custom cursor: use the native one there */
+    body.has-custom-cursor dialog[open] {
+      cursor: auto;
+    }
+    body.has-custom-cursor dialog[open] a,
+    body.has-custom-cursor dialog[open] button,
+    body.has-custom-cursor dialog[open] [role="button"] {
+      cursor: pointer;
+    }
+    body.has-custom-cursor:has(dialog[open]) .cursor {
+      visibility: hidden !important;
+    }
 
     img { max-width: 100%; height: auto; display: block; }
     a { color: var(--accent); text-underline-offset: 0.18em; }
