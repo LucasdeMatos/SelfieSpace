@@ -1329,7 +1329,7 @@
     }
     .lightbox::backdrop { background: oklch(0.05 0 0 / 0.72); }
     /* Zoom + pan: native cursors here, the custom cursor lives below the dialog's top layer */
-    .lightbox {
+    #lightbox {
       width: 100%;
       height: 100%;
       max-width: none;
@@ -1338,11 +1338,11 @@
       border: 0;
       overflow: hidden;
     }
-    body.has-custom-cursor .lightbox,
-    body.has-custom-cursor .lightbox img { cursor: zoom-in; }
-    body.has-custom-cursor .lightbox button { cursor: pointer; }
-    body.has-custom-cursor .lightbox.is-zoomed img { cursor: grab; }
-    body.has-custom-cursor .lightbox.is-dragging img { cursor: grabbing; }
+    body.has-custom-cursor #lightbox,
+    body.has-custom-cursor #lightbox img { cursor: zoom-in; }
+    body.has-custom-cursor #lightbox button { cursor: pointer; }
+    body.has-custom-cursor #lightbox.is-zoomed img { cursor: grab; }
+    body.has-custom-cursor #lightbox.is-dragging img { cursor: grabbing; }
     .lightbox .lightbox-zoomable {
       touch-action: none;
       user-select: none;
@@ -1387,7 +1387,7 @@
       transition: background 0.2s;
     }
     .lightbox-zoom button:hover:not(:disabled) { background: oklch(0.25 0 0); }
-    .lightbox-zoom button:disabled { opacity: 0.35; cursor: default; }
+    #lightbox .lightbox-zoom button:disabled { opacity: 0.35; cursor: default; }
     .lightbox-zoom-level {
       min-width: 3.5rem;
       font-size: 0.8rem;
