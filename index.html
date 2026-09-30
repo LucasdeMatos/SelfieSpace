@@ -1610,7 +1610,60 @@
       width: 100%;
       height: 100%;
       z-index: 1;
-      touch-action: none;
+      /* Vertical swipes keep scrolling the story; horizontal drags rotate the satellite. */
+      touch-action: pan-y;
+      cursor: grab;
+    }
+    #canvas-3d-sat.is-dragging { cursor: grabbing; }
+    .sat-part-label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate3d(-100px, -100px, 0);
+      transition: opacity 0.25s var(--ease-out);
+      will-change: transform;
+    }
+    .sat-part-label.is-visible { opacity: 1; }
+    .sat-part-label::before {
+      content: "";
+      flex: none;
+      width: 9px;
+      height: 9px;
+      margin-left: -4.5px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px oklch(0.82 0.15 113 / 0.2), 0 0 14px oklch(0.82 0.15 113 / 0.6);
+    }
+    .sat-part-label-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      padding: 0.45rem 0.75rem;
+      background: oklch(0.1 0.01 230 / 0.82);
+      border: 1px solid oklch(0.82 0.15 113 / 0.4);
+      border-radius: 0.5rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px oklch(0 0 0 / 0.45);
+      white-space: nowrap;
+    }
+    .sat-part-label-title {
+      font-family: var(--font-display);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .sat-part-label-text {
+      font-size: 0.78rem;
+      color: var(--ink);
     }
     .sec-3d-overlay {
       position: absolute;
@@ -1968,11 +2021,17 @@
     <section class="sec-3d" id="modelo-3d" aria-labelledby="modelo-3d-title">
       <div class="sec-3d-pin">
         <canvas id="canvas-3d-sat"></canvas>
+        <div class="sat-part-label" id="sat-part-label" aria-hidden="true">
+          <div class="sat-part-label-body">
+            <span class="sat-part-label-title"></span>
+            <span class="sat-part-label-text"></span>
+          </div>
+        </div>
         <div class="sec-3d-overlay">
           <div class="sec-3d-header reveal">
             <p class="section-kicker">3D Interativo · Órbita & Hardware</p>
             <h2 id="modelo-3d-title">Explore o SAT GUS em 3D</h2>
-            <p class="sec-3d-hint">Role para baixo para interagir com o modelo e aproximar da selfie em órbita</p>
+            <p class="sec-3d-hint">Role para aproximar da selfie em órbita · arraste o satélite para girá-lo</p>
           </div>
 
           <div class="sec-3d-cards">
@@ -4043,9 +4102,12 @@
         earthGroup.position.set(-4.5, -2, -3);
 
         /* 3D Satellite CubeSat (SAT GUS) */
+        /* satRig follows the scroll path, satDrag holds the user's drag rotation, satGroup floats. */
         var satRig = new THREE.Group();
+        var satDrag = new THREE.Group();
         var satGroup = new THREE.Group();
-        satRig.add(satGroup);
+        satRig.add(satDrag);
+        satDrag.add(satGroup);
         scene.add(satRig);
 
         /* Sat Main Body: dark anodized aluminium with a restrained machined finish. */
@@ -4290,15 +4352,246 @@
 
         if (finePointer) {
           window.addEventListener("pointermove", function (e) {
+            if (drag.active) return;
             mouseTargetX = (e.clientX / window.innerWidth - 0.5) * 2;
             mouseTargetY = (e.clientY / window.innerHeight - 0.5) * 2;
           }, { passive: true });
+        }
+
+        /*
+         * Drag to rotate: yaw is free, pitch is clamped. After release the spin
+         * coasts, then eases back to rest so the scroll story still ends with the
+         * display facing the viewer.
+         */
+        var DRAG_SPEED = 0.006;
+        var PITCH_LIMIT = 0.6;
+        var drag = {
+          active: false,
+          pointerId: null,
+          lastX: 0,
+          lastY: 0,
+          yaw: 0,
+          pitch: 0,
+          velYaw: 0,
+          velPitch: 0,
+          releasedAt: -Infinity,
+          touchLocked: false
+        };
+
+        canvas.addEventListener("pointerdown", function (e) {
+          if (e.button !== undefined && e.button !== 0) return;
+          drag.active = true;
+          drag.pointerId = e.pointerId;
+          drag.lastX = e.clientX;
+          drag.lastY = e.clientY;
+          drag.startX = e.clientX;
+          drag.startY = e.clientY;
+          drag.velYaw = 0;
+          drag.velPitch = 0;
+          pointer.clientX = e.clientX;
+          pointer.clientY = e.clientY;
+          pointer.inside = true;
+          /* Touch waits to see if the gesture is horizontal; vertical swipes stay scrolls. */
+          drag.touchLocked = e.pointerType !== "touch";
+          if (drag.touchLocked) {
+            canvas.setPointerCapture(e.pointerId);
+            canvas.classList.add("is-dragging");
+          }
+          setHovered(null);
+        });
+
+        canvas.addEventListener("pointermove", function (e) {
+          pointer.clientX = e.clientX;
+          pointer.clientY = e.clientY;
+          pointer.inside = true;
+          if (!drag.active || e.pointerId !== drag.pointerId) return;
+
+          if (!drag.touchLocked) {
+            var totalX = Math.abs(e.clientX - drag.startX);
+            var totalY = Math.abs(e.clientY - drag.startY);
+            if (totalX < 6 && totalY < 6) return;
+            if (totalY > totalX) {
+              drag.active = false;
+              return;
+            }
+            drag.touchLocked = true;
+            drag.lastX = e.clientX;
+            drag.lastY = e.clientY;
+          }
+
+          var dx = e.clientX - drag.lastX;
+          var dy = e.clientY - drag.lastY;
+          drag.lastX = e.clientX;
+          drag.lastY = e.clientY;
+          drag.velYaw = dx * DRAG_SPEED;
+          drag.velPitch = e.pointerType === "touch" ? 0 : dy * DRAG_SPEED;
+          drag.yaw += drag.velYaw;
+          drag.pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, drag.pitch + drag.velPitch));
+          toggleRenderLoop();
+        });
+
+        function endDrag(e) {
+          if (!drag.active || (e && e.pointerId !== drag.pointerId)) return;
+          drag.active = false;
+          drag.releasedAt = clock.getElapsedTime();
+          canvas.classList.remove("is-dragging");
+          if (canvas.hasPointerCapture && canvas.hasPointerCapture(drag.pointerId)) {
+            canvas.releasePointerCapture(drag.pointerId);
+          }
+        }
+        canvas.addEventListener("pointerup", endDrag);
+        canvas.addEventListener("pointercancel", endDrag);
+        canvas.addEventListener("pointerleave", function (e) {
+          if (e.pointerType === "touch") return;
+          if (!drag.active) {
+            pointer.inside = false;
+            setHovered(null);
+          }
+        });
+
+        function updateDragRotation(elapsed, dt) {
+          if (!drag.active) {
+            /* Coast with the release velocity, then settle back to the scroll pose. */
+            var frames = dt * 60;
+            var decay = Math.pow(0.92, frames);
+            drag.yaw += drag.velYaw * frames;
+            drag.pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, drag.pitch + drag.velPitch * frames));
+            drag.velYaw *= decay;
+            drag.velPitch *= decay;
+            if (elapsed - drag.releasedAt > 1.6) {
+              /* Return along the shortest way around. */
+              var settle = 1 - Math.exp(-dt * 2.4);
+              drag.yaw = Math.atan2(Math.sin(drag.yaw), Math.cos(drag.yaw));
+              drag.yaw += (0 - drag.yaw) * settle;
+              drag.pitch += (0 - drag.pitch) * settle;
+            }
+          }
+          satDrag.rotation.set(drag.pitch, drag.yaw, 0);
+        }
+
+        /* Hover highlighting: raycast against the camera module and the Pixel display. */
+        var partLabel = document.getElementById("sat-part-label");
+        var partLabelTitle = partLabel ? partLabel.querySelector(".sat-part-label-title") : null;
+        var partLabelText = partLabel ? partLabel.querySelector(".sat-part-label-text") : null;
+        var raycaster = new THREE.Raycaster();
+        var pointerNdc = new THREE.Vector2();
+        var pointer = { clientX: 0, clientY: 0, inside: false };
+        var labelAnchor = new THREE.Vector3();
+        var hovered = null;
+
+        var satParts = [
+          {
+            key: "camera",
+            title: "Câmera",
+            text: "Tira a selfie da tela com a Terra ao fundo",
+            cursor: "Câmera",
+            meshes: [cameraMount, lensHousing, lensRing, lensGlass],
+            anchor: lensGlass,
+            anchorOffset: new THREE.Vector3(0.2, 0, 0)
+          },
+          {
+            key: "display",
+            title: "Display Pixel",
+            text: "Tela do Google Pixel que mostra a selfie enviada",
+            cursor: "Tela",
+            meshes: [screenMesh, glassMesh, screenFrame],
+            anchor: screenMesh,
+            anchorOffset: new THREE.Vector3(screenWidth / 2, screenHeight / 2 - 0.1, 0)
+          }
+        ];
+        var HIGHLIGHT_COLOR = new THREE.Color(0x4cc9ff);
+        satParts.forEach(function (part) {
+          part.meshes.forEach(function (mesh) {
+            mesh.userData.satPart = part;
+            mesh.userData.baseEmissive = mesh.material.emissive.clone();
+            mesh.userData.baseEmissiveIntensity = mesh.material.emissiveIntensity;
+            /* The photo glows brighter in its own colors; bezels and metal take the blue tint. */
+            mesh.userData.tint = mesh === screenMesh ? 0 : 0.16;
+          });
+          part.glow = 0;
+        });
+        /* Everything else on the satellite blocks the ray, so hidden parts never light up. */
+        var satMeshes = [];
+        satGroup.traverse(function (obj) {
+          if (obj.isMesh) satMeshes.push(obj);
+        });
+
+        var cursorState = "";
+
+        function setCursorLabel(label) {
+          if (label === cursorState) return;
+          cursorState = label;
+          if (!cursor || !document.body.classList.contains("has-custom-cursor")) return;
+          cursor.classList.toggle("is-hover", !!label);
+          if (cursorLabel) cursorLabel.textContent = label;
+        }
+
+        function setHovered(part, overSat) {
+          setCursorLabel(drag.active ? "" : part ? part.cursor : overSat ? "Girar" : "");
+          if (part === hovered) return;
+          hovered = part;
+          if (partLabel) {
+            if (part) {
+              partLabelTitle.textContent = part.title;
+              partLabelText.textContent = part.text;
+              partLabel.classList.add("is-visible");
+            } else {
+              partLabel.classList.remove("is-visible");
+            }
+          }
+          toggleRenderLoop();
+        }
+
+        /* Runs every frame: scrolling moves the satellite under a still mouse. */
+        function pickPart() {
+          if (!pointer.inside || drag.active) {
+            setHovered(null);
+            return;
+          }
+          var rect = canvas.getBoundingClientRect();
+          if (pointer.clientY < rect.top || pointer.clientY > rect.bottom) {
+            setHovered(null);
+            return;
+          }
+          pointerNdc.x = ((pointer.clientX - rect.left) / rect.width) * 2 - 1;
+          pointerNdc.y = -((pointer.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster.setFromCamera(pointerNdc, camera);
+          var hits = raycaster.intersectObjects(satMeshes, false);
+          var part = hits.length ? hits[0].object.userData.satPart || null : null;
+          setHovered(part, hits.length > 0);
+        }
+
+        function updateHighlights() {
+          satParts.forEach(function (part) {
+            var target = part === hovered ? 1 : 0;
+            part.glow += (target - part.glow) * 0.14;
+            part.meshes.forEach(function (mesh) {
+              var mat = mesh.material;
+              mat.emissive.copy(mesh.userData.baseEmissive).lerp(HIGHLIGHT_COLOR, part.glow * mesh.userData.tint);
+              var base = mesh.userData.baseEmissiveIntensity;
+              mat.emissiveIntensity = mesh === screenMesh
+                ? base + part.glow * 0.28
+                : base + part.glow * Math.max(0, 1 - base);
+            });
+          });
+          if (!partLabel || !hovered) return;
+          var rect = canvas.getBoundingClientRect();
+          labelAnchor.copy(hovered.anchorOffset);
+          hovered.anchor.localToWorld(labelAnchor);
+          labelAnchor.project(camera);
+          var x = (labelAnchor.x * 0.5 + 0.5) * rect.width;
+          var y = (-labelAnchor.y * 0.5 + 0.5) * rect.height;
+          var maxX = rect.width - partLabel.offsetWidth - 12;
+          x = Math.max(12, Math.min(maxX, x));
+          y = Math.max(12, Math.min(rect.height - partLabel.offsetHeight - 12, y - partLabel.offsetHeight / 2));
+          partLabel.style.transform = "translate3d(" + x.toFixed(1) + "px," + y.toFixed(1) + "px,0)";
         }
 
         /* Render loop: slow planetary drift, stable microgravity, and no offscreen GPU work. */
         var clock = new THREE.Clock();
         var isSceneVisible = true;
         var renderFrame = null;
+        var lastElapsed = 0;
 
         function animate() {
           if (document.hidden || !isSceneVisible) {
@@ -4308,6 +4601,9 @@
 
           renderFrame = requestAnimationFrame(animate);
           var elapsed = clock.getElapsedTime();
+          /* Clamp so a long pause (tab hidden, section offscreen) doesn't jump the spin. */
+          var dt = Math.min(elapsed - lastElapsed, 0.1);
+          lastElapsed = elapsed;
 
           earthMesh.rotation.y = elapsed * 0.018;
           cloudMesh.rotation.y = 0.16 + elapsed * 0.024;
@@ -4320,12 +4616,16 @@
           satGroup.position.y = Math.sin(elapsed * 0.78) * 0.065;
           satGroup.position.x = Math.cos(elapsed * 0.54) * 0.012;
           satGroup.rotation.z = Math.sin(elapsed * 0.62) * 0.012;
+          updateDragRotation(elapsed, dt);
 
           camera.position.x = mouseCurrX * 0.5;
           camera.position.y = -mouseCurrY * 0.5;
           camera.lookAt(0, 0, 0);
 
           renderer.render(scene, camera);
+          /* Raycast after render so world matrices match what the user sees. */
+          pickPart();
+          updateHighlights();
         }
 
         function toggleRenderLoop() {
@@ -4340,6 +4640,10 @@
         if ("IntersectionObserver" in window) {
           new IntersectionObserver(function (entries) {
             isSceneVisible = entries[0].isIntersecting;
+            if (!isSceneVisible) {
+              pointer.inside = false;
+              setHovered(null);
+            }
             toggleRenderLoop();
           }, { threshold: 0.01 }).observe(secContainer);
         }
