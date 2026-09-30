@@ -84,8 +84,8 @@
       cursor: none;
     }
     /* Dialogs open in the top layer, above the custom cursor: use the native one there */
-    body.has-custom-cursor dialog[open] {
-      cursor: auto;
+    body.has-custom-cursor :where(dialog[open]) {
+      cursor: auto; /* low specificity so per-dialog cursors (e.g. lightbox zoom-in) win */
     }
     body.has-custom-cursor dialog[open] a,
     body.has-custom-cursor dialog[open] button,
